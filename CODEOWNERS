@@ -3,11 +3,11 @@
 # Place this file at .github/CODEOWNERS in the repo.
 # Replace "planttrust" below with your actual GitHub org name if different.
 
-/module-1-user-mgmt/         @planttrust/module-1-user-mgmt
-/module-2-marketplace/       @planttrust/module-2-marketplace
-/module-3-mcp-ai/            @planttrust/module-3-mcp-ai
-/module-4-geofencing/        @planttrust/module-4-geofencing
-/module-5-blockchain-audit/  @planttrust/module-5-blockchain-audit
+/module-1-user-management/         @planttrust/module-1-user-management
+/module-2-marketplace/             @planttrust/module-2-marketplace
+/module-3-mcp-ai/                  @planttrust/module-3-mcp-ai
+/module-4-company-geofencing/      @planttrust/module-4-company-geofencing
+/module-5-blockchain-audit/        @planttrust/module-5-blockchain-audit
 
 # Shared code and contracts require sign-off from more than one person by convention —
 # GitHub CODEOWNERS can only assign a team, so route to the full dev team here.
