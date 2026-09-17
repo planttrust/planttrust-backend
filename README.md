@@ -8,10 +8,10 @@ The system is split into five modules, each owned by one team member and spannin
 
 | Folder | Module | Owner |
 |---|---|---|
-| `module-1-user-mgmt/` | User Management & Corporate Registry | _assign name_ |
+| `module-1-user-management/` | User Management & Corporate Registry | _assign name_ |
 | `module-2-marketplace/` | Investor Marketplace & Investment Lifecycle | _assign name_ |
 | `module-3-mcp-ai/` | MCP-Driven Explainable AI & Chatbot | _assign name_ |
-| `module-4-geofencing/` | Company Portal & Proof-of-Reality (Geofencing) | _assign name_ |
+| `module-4-company-geofencing/` | Company Portal & Proof-of-Reality (Geofencing) | _assign name_ |
 | `module-5-blockchain-audit/` | Blockchain Auditing & Regulatory Dashboard | _assign name_ |
 
 See each module's own `README.md` for its specific scope, and `docs/PROPOSAL.md` (or the shared proposal document) for the full breakdown of features, workload balancing, and the 14-week checkpoint schedule.
@@ -20,10 +20,10 @@ See each module's own `README.md` for its specific scope, and `docs/PROPOSAL.md`
 
 ```
 planttrust-platform/
-├── module-1-user-mgmt/
+├── module-1-user-management/
 ├── module-2-marketplace/
 ├── module-3-mcp-ai/
-├── module-4-geofencing/
+├── module-4-company-geofencing/
 ├── module-5-blockchain-audit/
 ├── shared/            # common code: XRPL client, auth middleware, DB connection
 ├── contracts/         # API contracts between modules (see contracts/README.md)
