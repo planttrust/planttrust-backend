@@ -8,11 +8,11 @@ The system is split into five modules, each owned by one team member and spannin
 
 | Folder | Module | Owner |
 |---|---|---|
-| `module-1-user-management/` | User Management & Corporate Registry | _assign name_ |
-| `module-2-marketplace/` | Investor Marketplace & Investment Lifecycle | _assign name_ |
-| `module-3-mcp-ai/` | MCP-Driven Explainable AI & Chatbot | _assign name_ |
-| `module-4-company-geofencing/` | Company Portal & Proof-of-Reality (Geofencing) | _assign name_ |
-| `module-5-blockchain-audit/` | Blockchain Auditing & Regulatory Dashboard | _assign name_ |
+| `module-1-user-management/` | User Management & Corporate Registry | _Nimsara Karunarathna_ |
+| `module-2-marketplace/` | Investor Marketplace & Investment Lifecycle | _Thilina Dasun_ |
+| `module-3-mcp-ai/` | MCP-Driven Explainable AI & Chatbot | _Imesha Ariyawansha_ |
+| `module-4-company-geofencing/` | Company Portal & Proof-of-Reality (Geofencing) | _Yasuri Pradeepika_ |
+| `module-5-blockchain-audit/` | Blockchain Auditing & Regulatory Dashboard | _Mirath Nimsara_ |
 
 See each module's own `README.md` for its specific scope, and `docs/PROPOSAL.md` (or the shared proposal document) for the full breakdown of features, workload balancing, and the 14-week checkpoint schedule.
 
