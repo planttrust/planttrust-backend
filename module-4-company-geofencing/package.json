@@ -1,0 +1,30 @@
+{
+  "name": "planttrust-module-4-company-geofencing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Company Portal & Proof-of-Reality (Geofencing) — PlanTrust Module 4",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "test": "jest --passWithNoTests --forceExit"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "exif-reader": "^2.0.1",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.13.0",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
+    "sharp": "^0.33.5",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.7",
+    "supertest": "^7.0.0"
+  }
+}

@@ -11,7 +11,9 @@
 # GitHub CODEOWNERS can only assign a team, so route to the full dev team here.
 /shared/                     @planttrust/planttrust-devs
 /contracts/                  @planttrust/planttrust-devs
+/docs/                       @planttrust/planttrust-devs
 
-# CI and repo-level config
+# CI, Docker, and repo-level config
 /.github/                    @planttrust/planttrust-devs
 docker-compose.yml           @planttrust/planttrust-devs
+.gitignore                   @planttrust/planttrust-devs
