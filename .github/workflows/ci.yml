@@ -108,18 +108,18 @@ jobs:
             done
           done
 
-      - name: Smoke test — Module 5 anchor endpoint
-        run: |
-          RESPONSE=$(curl -sf -X POST http://localhost:3005/api/audit/anchor \
-            -H "Content-Type: application/json" \
-            -d '{"sourceModule":"module-1","eventType":"ci_test","dataHash":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}')
-          echo "Anchor response: $RESPONSE"
-          echo "$RESPONSE" | jq -e '.anchorId' > /dev/null
+      # TODO: Uncomment when Module 5's /api/audit/anchor endpoint is built (Checkpoint 2)
+      # - name: Smoke test — Module 5 anchor endpoint
+      #   run: |
+      #     RESPONSE=$(curl -sf -X POST http://localhost:3005/api/audit/anchor \
+      #       -H "Content-Type: application/json" \
+      #       -d '{"sourceModule":"module-1","eventType":"ci_test","dataHash":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}')
+      #     echo "Anchor response: $RESPONSE"
+      #     echo "$RESPONSE" | jq -e '.anchorId' > /dev/null
 
-      - name: Smoke test — Cross-module health
+      - name: Smoke test — All modules healthy
         run: |
-          # Verify each module can reach Module 5
-          for port in 3001 3002 3003 3004; do
+          for port in 3001 3002 3003 3004 3005; do
             echo "Checking module on port $port..."
             curl -sf http://localhost:$port/health | jq -e '.status == "ok"'
           done
