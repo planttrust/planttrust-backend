@@ -1,0 +1,155 @@
+# PlanTrust — Docker Compose
+# Starts all 5 module backends, the shared database, and Redis for caching/queues.
+# Usage: docker-compose up (from repo root)
+
+version: "3.9"
+
+services:
+  # ─── Shared Infrastructure ────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: planttrust-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: planttrust
+      POSTGRES_PASSWORD: planttrust_dev
+      POSTGRES_DB: planttrust
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U planttrust"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: planttrust-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ─── Module 1: User Management & Corporate Registry ───────────────────
+  module-1:
+    build:
+      context: .
+      dockerfile: module-1-user-management/Dockerfile
+    container_name: planttrust-module-1
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgres://planttrust:planttrust_dev@db:5432/planttrust
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-change-in-prod
+      MODULE_NAME: module-1
+      AUDIT_API_URL: http://module-5:3005/api/audit
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ─── Module 2: Investor Marketplace & Investment Lifecycle ─────────────
+  module-2:
+    build:
+      context: .
+      dockerfile: module-2-marketplace/Dockerfile
+    container_name: planttrust-module-2
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgres://planttrust:planttrust_dev@db:5432/planttrust
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-change-in-prod
+      MODULE_NAME: module-2
+      AUDIT_API_URL: http://module-5:3005/api/audit
+      MODULE_1_API_URL: http://module-1:3001/api
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ─── Module 3: MCP-Driven Explainable AI & Chatbot ─────────────────────
+  module-3:
+    build:
+      context: .
+      dockerfile: module-3-mcp-ai/Dockerfile
+    container_name: planttrust-module-3
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      PORT: 3003
+      DATABASE_URL: postgres://planttrust:planttrust_dev@db:5432/planttrust
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-change-in-prod
+      MODULE_NAME: module-3
+      AUDIT_API_URL: http://module-5:3005/api/audit
+      MODULE_1_API_URL: http://module-1:3001/api
+      MODULE_2_API_URL: http://module-2:3002/api
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ─── Module 4: Company Portal & Proof-of-Reality (Geofencing) ──────────
+  module-4:
+    build:
+      context: .
+      dockerfile: module-4-company-geofencing/Dockerfile
+    container_name: planttrust-module-4
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    environment:
+      PORT: 3004
+      DATABASE_URL: postgres://planttrust:planttrust_dev@db:5432/planttrust
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-change-in-prod
+      MODULE_NAME: module-4
+      AUDIT_API_URL: http://module-5:3005/api/audit
+      MODULE_2_API_URL: http://module-2:3002/api
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ─── Module 5: Blockchain Auditing & Regulatory Dashboard ──────────────
+  module-5:
+    build:
+      context: .
+      dockerfile: module-5-blockchain-audit/Dockerfile
+    container_name: planttrust-module-5
+    restart: unless-stopped
+    ports:
+      - "3005:3005"
+    environment:
+      PORT: 3005
+      DATABASE_URL: postgres://planttrust:planttrust_dev@db:5432/planttrust
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-secret-change-in-prod
+      MODULE_NAME: module-5
+      XRPL_NETWORK: wss://s.altnet.rippletest.net:51233
+      XRPL_WALLET_SEED: ${XRPL_WALLET_SEED:-sEdxxxxxxxxxxxxxxxxxxxxxxxxx}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pg_data:

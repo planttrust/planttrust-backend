@@ -1,6 +1,6 @@
 # Contract Template
 
-Copy this file into `contracts/module-<n>-<name>.md` for each endpoint or event your module exposes to others. Get sign-off from any module that will call it before you start building.
+Copy this file as `contracts/module-<n>-<name>.md` for each endpoint or event your module exposes to others. Get sign-off from any module that will call it before you start building.
 
 ---
 
@@ -27,6 +27,14 @@ Copy this file into `contracts/module-<n>-<name>.md` for each endpoint or event 
   "field": "type — description"
 }
 ```
+
+### Error Responses
+
+| Status | Body | When |
+|---|---|---|
+| `400` | `{ "error": "description" }` | Invalid input |
+| `401` | `{ "error": "unauthorized" }` | Missing/invalid JWT |
+| `500` | `{ "error": "internal" }` | Server error |
 
 ### Notes
 
@@ -65,5 +73,5 @@ Copy this file into `contracts/module-<n>-<name>.md` for each endpoint or event 
 
 ### Notes
 
-- Until the real XRPL call is implemented (Checkpoint 2), this endpoint returns a stubbed response and logs the request instead.
+- Until the real XRPL call is implemented, this endpoint returns a stubbed response and logs the request.
 - Related issues: Module 5 issue #6, #7.
