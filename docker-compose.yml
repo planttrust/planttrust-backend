@@ -151,5 +151,21 @@ services:
       redis:
         condition: service_healthy
 
+  # ─── Frontend: Next.js App ────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: planttrust-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_MODULE1_URL: http://localhost:3001
+      NEXT_PUBLIC_MODULE2_URL: http://localhost:3002
+      NEXT_PUBLIC_MODULE3_URL: http://localhost:3003
+      NEXT_PUBLIC_MODULE4_URL: http://localhost:3004
+      NEXT_PUBLIC_MODULE5_URL: http://localhost:3005
+
 volumes:
   pg_data:
