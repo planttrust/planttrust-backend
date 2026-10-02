@@ -13,6 +13,19 @@
 /contracts/                  @planttrust/planttrust-devs
 /docs/                       @planttrust/planttrust-devs
 
+# Frontend — each member owns their module's pages
+/frontend/src/app/auth/              @planttrust/module-1-user-management
+/frontend/src/app/marketplace/       @planttrust/module-2-marketplace
+/frontend/src/app/chatbot/           @planttrust/module-3-mcp-ai
+/frontend/src/app/company/           @planttrust/module-4-company-geofencing
+/frontend/src/app/dashboard/         @planttrust/module-5-blockchain-audit
+
+# Frontend — shared components, lib, layout, config
+/frontend/src/components/    @planttrust/planttrust-devs
+/frontend/src/lib/           @planttrust/planttrust-devs
+/frontend/src/app/layout.js  @planttrust/planttrust-devs
+/frontend/src/app/page.js    @planttrust/planttrust-devs
+
 # CI, Docker, and repo-level config
 /.github/                    @planttrust/planttrust-devs
 docker-compose.yml           @planttrust/planttrust-devs

@@ -32,18 +32,26 @@ Each layer is scored 1–5 for relative effort (5 = hardest). Totals are within 
 
 ```
 planttrust-platform/
-├── module-1-user-management/    # User onboarding, docs, certs
-├── module-2-marketplace/        # Escrow, NFTs, marketplace
-├── module-3-mcp-ai/             # MCP server, chatbot, scam detection
-├── module-4-company-geofencing/ # Geofence, proof-of-reality, reports
-├── module-5-blockchain-audit/   # XRPL anchoring, Trust Index, dashboard
-├── shared/                      # Common code: XRPL client, auth, DB, hashing
+├── frontend/                    # Next.js app (shared UI for all modules)
+│   ├── src/app/auth/            # M1 pages (Nimsara)
+│   ├── src/app/marketplace/     # M2 pages (Thilina)
+│   ├── src/app/chatbot/         # M3 pages (Imesha)
+│   ├── src/app/company/         # M4 pages (Yasuri)
+│   ├── src/app/dashboard/       # M5 pages (Mirath)
+│   ├── src/components/          # Shared UI: Navbar, Footer, etc.
+│   └── src/lib/                 # API client config
+├── module-1-user-management/    # Backend: User onboarding, docs, certs
+├── module-2-marketplace/        # Backend: Escrow, NFTs, marketplace
+├── module-3-mcp-ai/             # Backend: MCP server, chatbot, scam detection
+├── module-4-company-geofencing/ # Backend: Geofence, proof-of-reality, reports
+├── module-5-blockchain-audit/   # Backend: XRPL anchoring, Trust Index, dashboard
+├── shared/                      # Common backend code: XRPL client, auth, DB, hashing
 ├── contracts/                   # API contracts between modules
 ├── docs/                        # Full proposal and planning documents
 ├── .github/
 │   ├── CODEOWNERS
 │   └── workflows/ci.yml         # CI: unit tests + integration smoke tests
-├── docker-compose.yml           # Spin up all 5 modules + Postgres + Redis
+├── docker-compose.yml           # Spin up frontend + 5 backends + Postgres + Redis
 ├── .gitignore
 └── README.md
 ```
@@ -51,22 +59,23 @@ planttrust-platform/
 ## Getting the whole system running locally
 
 ```bash
-# Start everything (Postgres, Redis, all 5 modules)
+# Start everything (Postgres, Redis, all 5 backends + frontend)
 docker-compose up
 
-# Or start a single module for focused development
-docker-compose up module-1 db redis
+# Or start frontend + a single backend for focused development
+docker-compose up frontend module-1 db redis
 ```
 
-Each module's backend runs on its own port:
+Each service runs on its own port:
 
-| Module | Port | Health check |
+| Service | Port | URL |
 |---|---|---|
-| Module 1 | `3001` | `http://localhost:3001/health` |
-| Module 2 | `3002` | `http://localhost:3002/health` |
-| Module 3 | `3003` | `http://localhost:3003/health` |
-| Module 4 | `3004` | `http://localhost:3004/health` |
-| Module 5 | `3005` | `http://localhost:3005/health` |
+| Frontend | `3000` | `http://localhost:3000` |
+| Module 1 (Backend) | `3001` | `http://localhost:3001/health` |
+| Module 2 (Backend) | `3002` | `http://localhost:3002/health` |
+| Module 3 (Backend) | `3003` | `http://localhost:3003/health` |
+| Module 4 (Backend) | `3004` | `http://localhost:3004/health` |
+| Module 5 (Backend) | `3005` | `http://localhost:3005/health` |
 
 ## Branching model
 
