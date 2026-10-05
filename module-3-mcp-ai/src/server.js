@@ -23,12 +23,12 @@ app.get('/health', (req, res) => {
 
 // ─── Routes ─────────────────────────────────────────────────────────────
 // TODO: Mount route files as they are built
-// const mcpRoutes = require('./routes/mcp');
-// const chatbotRoutes = require('./routes/chatbot');
-// const scamRoutes = require('./routes/scam');
-// app.use('/api/mcp', mcpRoutes);
-// app.use('/api/chatbot', chatbotRoutes);
-// app.use('/api/scam', scamRoutes);
+const mcpRoutes = require('./routes/mcp');
+const chatbotRoutes = require('./routes/chatbot');
+const scamRoutes = require('./routes/scam');
+app.use('/api/mcp', mcpRoutes);
+app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/scam', scamRoutes);
 
 // ─── Start ──────────────────────────────────────────────────────────────
 app.listen(PORT, () => {

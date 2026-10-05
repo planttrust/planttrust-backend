@@ -23,12 +23,12 @@ app.get('/health', (req, res) => {
 
 // ─── Routes ─────────────────────────────────────────────────────────────
 // TODO: Mount route files as they are built
-// const projectRoutes = require('./routes/projects');
-// const reportRoutes = require('./routes/reports');
-// const geofenceRoutes = require('./routes/geofence');
-// app.use('/api/projects', projectRoutes);
-// app.use('/api/reports', reportRoutes);
-// app.use('/api/geofence', geofenceRoutes);
+const projectRoutes = require('./routes/projects');
+const reportRoutes = require('./routes/reports');
+const geofenceRoutes = require('./routes/geofence');
+app.use('/api/projects', projectRoutes);
+app.use('/api/reports', reportRoutes);
+app.use('/api/geofence', geofenceRoutes);
 
 // ─── Start ──────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
