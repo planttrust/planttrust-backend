@@ -21,3 +21,6 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+# Frontend lives in its own repo (planttrust-frontend)
+frontend/

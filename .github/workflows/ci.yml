@@ -1,8 +1,8 @@
-# PlanTrust CI — Integration Smoke Tests
+# PlanTrust Backend CI — Unit Tests & Integration Smoke Tests
 #
 # Runs on every PR targeting develop or main.
 # Each module runs its own unit tests independently, then the integration
-# smoke test spins up all services and hits cross-module endpoints.
+# smoke test spins up all backend services and hits cross-module endpoints.
 
 name: CI
 
@@ -76,14 +76,21 @@ jobs:
         run: npm test
         working-directory: ${{ matrix.module }}
 
-  # ─── Integration Smoke Tests ──────────────────────────────────────────
+  # ─── Integration Smoke Tests (backend-only) ───────────────────────────
   integration:
     runs-on: ubuntu-latest
     needs: unit-tests
 
     steps:
-      - name: Checkout code
+      - name: Checkout backend code
         uses: actions/checkout@v4
+
+      # Clone the frontend repo alongside for docker-compose
+      - name: Checkout frontend code
+        uses: actions/checkout@v4
+        with:
+          repository: planttrust/planttrust-frontend
+          path: ../planttrust-frontend
 
       - name: Start all services
         run: docker compose up -d --build --wait

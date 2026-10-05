@@ -8,7 +8,9 @@ Modules communicate with each other **only through defined APIs** — never by o
 
 ## 2. Repository and branching structure
 
-- **One shared repository** with one folder per module (`module-1-user-management/`, `module-2-marketplace/`, etc.), plus a `shared/` folder for common code (XRPL client, auth middleware, DB connection).
+- **Two repositories:**
+  - **`planttrust-backend`** (this repo) — all backend modules (`module-1-user-management/`, `module-2-marketplace/`, etc.), plus `shared/` for common backend code (XRPL client, auth middleware, DB connection).
+  - **`planttrust-frontend`** — the Next.js frontend app, with one route per module.
 - **`main`** — always stable and demo-ready. Protected: PR + review required, no direct pushes. Only updated from `develop` after a checkpoint's integration test has passed.
 - **`develop`** — the shared weekly integration baseline. Protected: PR + at least one review required.
 - **`feature/<module>/<short-ticket-name>`** — one branch per GitHub issue, branched from `develop`, merged back into `develop` via PR.
@@ -61,7 +63,15 @@ A module should **never sit idle** waiting for another module to finish. If Modu
 
 ## 6. One shared environment everyone can run locally
 
-Use Docker Compose (`docker-compose up` from the repo root) to bring up the entire system — all five modules together — on any member's machine. Without this, "it works on my machine" failures only surface at the weekly integration meeting instead of before it.
+Clone both repos side-by-side:
+
+```
+parent-dir/
+├── planttrust-backend/     # This repo (backend)
+└── planttrust-frontend/    # Frontend repo
+```
+
+Then use Docker Compose (`docker-compose up` from the backend repo root) to bring up the entire system — all five backend modules plus the frontend — on any member's machine. Without this, "it works on my machine" failures only surface at the weekly integration meeting instead of before it.
 
 ## 7. Weekly integration ritual
 

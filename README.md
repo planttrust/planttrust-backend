@@ -1,6 +1,8 @@
-# PlanTrust
+# PlanTrust — Backend
 
 A blockchain-based land investment platform built on the XRPL Testnet. PlanTrust lets companies register verified land/project records, investors fund projects through an escrow-backed marketplace, AI systems flag risk and scam patterns, and every key event is hashed and anchored on-chain for auditability.
+
+> **Two-repo architecture:** This repository contains the **backend** (all 5 module APIs, shared utilities, contracts, docs). The **frontend** (Next.js) lives in a separate repository: [`planttrust-frontend`](https://github.com/planttrust/planttrust-frontend).
 
 ## Modules
 
@@ -28,42 +30,58 @@ Each layer is scored 1–5 for relative effort (5 = hardest). Totals are within 
 | M4 — Geofencing | 4 | 2 | 3 | 4 | 3 | **16** |
 | M5 — Blockchain Audit | 3 | 4 | 3 | 2 | 5 | **17** |
 
-## Repository layout
+## Repository Layout
 
 ```
-planttrust-platform/
-├── frontend/                    # Next.js app (shared UI for all modules)
-│   ├── src/app/auth/            # M1 pages (Nimsara)
-│   ├── src/app/marketplace/     # M2 pages (Thilina)
-│   ├── src/app/chatbot/         # M3 pages (Imesha)
-│   ├── src/app/company/         # M4 pages (Yasuri)
-│   ├── src/app/dashboard/       # M5 pages (Mirath)
-│   ├── src/components/          # Shared UI: Navbar, Footer, etc.
-│   └── src/lib/                 # API client config
-├── module-1-user-management/    # Backend: User onboarding, docs, certs
-├── module-2-marketplace/        # Backend: Escrow, NFTs, marketplace
-├── module-3-mcp-ai/             # Backend: MCP server, chatbot, scam detection
-├── module-4-company-geofencing/ # Backend: Geofence, proof-of-reality, reports
-├── module-5-blockchain-audit/   # Backend: XRPL anchoring, Trust Index, dashboard
-├── shared/                      # Common backend code: XRPL client, auth, DB, hashing
-├── contracts/                   # API contracts between modules
-├── docs/                        # Full proposal and planning documents
+planttrust-backend/               # Backend repo
+├── module-1-user-management/     # Backend: User onboarding, docs, certs
+├── module-2-marketplace/         # Backend: Escrow, NFTs, marketplace
+├── module-3-mcp-ai/              # Backend: MCP server, chatbot, scam detection
+├── module-4-company-geofencing/  # Backend: Geofence, proof-of-reality, reports
+├── module-5-blockchain-audit/    # Backend: XRPL anchoring, Trust Index, dashboard
+├── shared/                       # Common backend code: XRPL client, auth, DB, hashing
+├── contracts/                    # API contracts between modules
+├── docs/                         # Full proposal and planning documents
 ├── .github/
 │   ├── CODEOWNERS
-│   └── workflows/ci.yml         # CI: unit tests + integration smoke tests
-├── docker-compose.yml           # Spin up frontend + 5 backends + Postgres + Redis
+│   └── workflows/ci.yml          # CI: unit tests + integration smoke tests
+├── docker-compose.yml            # Spin up 5 backends + frontend (via image) + Postgres + Redis
 ├── .gitignore
 └── README.md
 ```
 
-## Getting the whole system running locally
+Frontend repo (separate):
+```
+planttrust-frontend/              # Frontend repo
+├── src/app/                      # Next.js app router pages (one dir per module)
+├── src/components/               # Shared UI: Navbar, Footer, etc.
+├── src/lib/                      # API client config
+├── Dockerfile
+└── package.json
+```
+
+## Getting the Whole System Running Locally
+
+### Option 1: Docker Compose (recommended)
 
 ```bash
 # Start everything (Postgres, Redis, all 5 backends + frontend)
 docker-compose up
 
-# Or start frontend + a single backend for focused development
-docker-compose up frontend module-1 db redis
+# Or start a single backend for focused development
+docker-compose up module-1 db redis
+```
+
+> **Note:** The frontend service in `docker-compose.yml` builds from a sibling directory (`../planttrust-frontend`). Make sure both repos are cloned side-by-side.
+
+### Option 2: Run individually
+
+```bash
+# Terminal 1 — Start a backend module
+cd module-1-user-management && npm install && npm run dev
+
+# Terminal 2 — Start the frontend (from the frontend repo)
+cd ../planttrust-frontend && npm install && npm run dev
 ```
 
 Each service runs on its own port:
@@ -77,7 +95,7 @@ Each service runs on its own port:
 | Module 4 (Backend) | `3004` | `http://localhost:3004/health` |
 | Module 5 (Backend) | `3005` | `http://localhost:3005/health` |
 
-## Branching model
+## Branching Model
 
 - `main` — always stable, demo-ready. Protected: no direct pushes, PR + review required.
 - `develop` — the shared integration baseline. Protected: PR + at least one review required.
@@ -112,6 +130,6 @@ Any hardening, adversarial testing, and demo preparation should be scheduled aft
 - Presentation and live demo at the final review are split by module, with each member presenting their own work.
 - If any module falls under ~50% of issues closed by Checkpoint 3, this is flagged to the supervisor immediately.
 
-## Mentor access
+## Mentor Access
 
 The team's mentor/supervisor has Admin access to this repository for oversight and review. See `MENTOR.md` for details on the scope of that access.

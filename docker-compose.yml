@@ -1,6 +1,13 @@
 # PlanTrust — Docker Compose
-# Starts all 5 module backends, the shared database, and Redis for caching/queues.
-# Usage: docker-compose up (from repo root)
+# Starts all 5 module backends, the frontend, the shared database, and Redis for caching/queues.
+#
+# Prerequisites:
+#   Both repos must be cloned side-by-side:
+#     parent-dir/
+#     ├── planttrust-backend/    (this repo — backend)
+#     └── planttrust-frontend/   (frontend repo)
+#
+# Usage: docker-compose up (from this repo's root)
 
 version: "3.9"
 
@@ -151,10 +158,10 @@ services:
       redis:
         condition: service_healthy
 
-  # ─── Frontend: Next.js App ────────────────────────────────────────────
+  # ─── Frontend: Next.js App (from sibling repo) ────────────────────────
   frontend:
     build:
-      context: ./frontend
+      context: ../planttrust-frontend
       dockerfile: Dockerfile
     container_name: planttrust-frontend
     restart: unless-stopped
