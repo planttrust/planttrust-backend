@@ -23,12 +23,12 @@ app.get('/health', (req, res) => {
 
 // ─── Routes ─────────────────────────────────────────────────────────────
 // TODO: Mount route files as they are built
-// const auditRoutes = require('./routes/audit');
-// const trustIndexRoutes = require('./routes/trust-index');
-// const verifyRoutes = require('./routes/verify');
-// app.use('/api/audit', auditRoutes);
-// app.use('/api/trust-index', trustIndexRoutes);
-// app.use('/api/verify', verifyRoutes);
+const auditRoutes = require('./routes/audit');
+const trustIndexRoutes = require('./routes/trust-index');
+const verifyRoutes = require('./routes/verify');
+app.use('/api/audit', auditRoutes);
+app.use('/api/trust-index', trustIndexRoutes);
+app.use('/api/verify', verifyRoutes);
 
 // ─── Start ──────────────────────────────────────────────────────────────
 app.listen(PORT, () => {

@@ -23,12 +23,12 @@ app.get('/health', (req, res) => {
 
 // ─── Routes ─────────────────────────────────────────────────────────────
 // TODO: Mount route files as they are built
-// const authRoutes = require('./routes/auth');
-// const documentRoutes = require('./routes/documents');
-// const certificateRoutes = require('./routes/certificates');
-// app.use('/api/auth', authRoutes);
-// app.use('/api/documents', documentRoutes);
-// app.use('/api/certificates', certificateRoutes);
+const authRoutes = require('./routes/auth');
+const documentRoutes = require('./routes/documents');
+const certificateRoutes = require('./routes/certificates');
+app.use('/api/auth', authRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/certificates', certificateRoutes);
 
 // ─── Start ──────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
