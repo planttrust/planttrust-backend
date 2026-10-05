@@ -158,11 +158,9 @@ services:
       redis:
         condition: service_healthy
 
-  # ─── Frontend: Next.js App (from sibling repo) ────────────────────────
+  # ─── Frontend: Next.js App (from GHCR) ────────────────────────────────
   frontend:
-    build:
-      context: ../planttrust-frontend
-      dockerfile: Dockerfile
+    image: ghcr.io/planttrust/planttrust-frontend:latest
     container_name: planttrust-frontend
     restart: unless-stopped
     ports:
