@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const pino = require('pino');
+const { notFoundHandler, globalErrorHandler } = require('../../shared/error-handler');
 
 const logger = pino({ transport: { target: 'pino-pretty' } });
 const app = express();
@@ -36,3 +37,4 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
