@@ -11,6 +11,9 @@ RUN cd module-5-blockchain-audit && npm ci --omit=dev
 
 COPY module-5-blockchain-audit/ ./module-5-blockchain-audit/
 
+# Let shared/ resolve packages from the module's node_modules
+RUN ln -s /app/module-5-blockchain-audit/node_modules /app/shared/node_modules
+
 WORKDIR /app/module-5-blockchain-audit
 
 EXPOSE 3005

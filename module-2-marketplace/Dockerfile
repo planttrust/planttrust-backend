@@ -11,6 +11,9 @@ RUN cd module-2-marketplace && npm ci --omit=dev
 
 COPY module-2-marketplace/ ./module-2-marketplace/
 
+# Let shared/ resolve packages from the module's node_modules
+RUN ln -s /app/module-2-marketplace/node_modules /app/shared/node_modules
+
 WORKDIR /app/module-2-marketplace
 
 EXPOSE 3002
