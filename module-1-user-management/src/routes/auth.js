@@ -2,11 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
+const db = require('../../../shared/db');
 
-const router = express.Router();
-
-// Mock database until Postgres is fully set up
-const usersDb = []; 
+const router = express.Router(); 
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
 
@@ -21,8 +19,8 @@ router.post('/register', async (req, res) => {
     }
 
     // Check if user exists
-    const userExists = usersDb.find(u => u.email === email);
-    if (userExists) {
+    const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userResult.rows.length > 0) {
       return res.status(400).json({ error: 'User already exists' });
     }
 
@@ -40,7 +38,10 @@ router.post('/register', async (req, res) => {
       createdAt: new Date().toISOString()
     };
 
-    usersDb.push(newUser);
+    await db.query(
+      'INSERT INTO users (id, name, email, password, role, created_at) VALUES ($1, $2, $3, $4, $5, $6)',
+      [newUser.id, newUser.name, newUser.email, newUser.password, newUser.role, newUser.createdAt]
+    );
 
     // Generate JWT
     const payload = {
@@ -75,10 +76,11 @@ router.post('/login', async (req, res) => {
     }
 
     // Check user
-    const user = usersDb.find(u => u.email === email);
-    if (!user) {
+    const userResult = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userResult.rows.length === 0) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
+    const user = userResult.rows[0];
 
     // Match password
     const isMatch = await bcrypt.compare(password, user.password);

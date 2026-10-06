@@ -11,6 +11,9 @@ RUN cd module-3-mcp-ai && npm ci --omit=dev
 
 COPY module-3-mcp-ai/ ./module-3-mcp-ai/
 
+# Let shared/ resolve packages from the module's node_modules
+RUN ln -s /app/module-3-mcp-ai/node_modules /app/shared/node_modules
+
 WORKDIR /app/module-3-mcp-ai
 
 EXPOSE 3003

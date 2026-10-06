@@ -11,6 +11,9 @@ RUN cd module-4-company-geofencing && npm ci --omit=dev
 
 COPY module-4-company-geofencing/ ./module-4-company-geofencing/
 
+# Let shared/ resolve packages from the module's node_modules
+RUN ln -s /app/module-4-company-geofencing/node_modules /app/shared/node_modules
+
 WORKDIR /app/module-4-company-geofencing
 
 EXPOSE 3004

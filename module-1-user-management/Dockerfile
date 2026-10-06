@@ -11,6 +11,9 @@ RUN cd module-1-user-management && npm ci --omit=dev
 
 COPY module-1-user-management/ ./module-1-user-management/
 
+# Let shared/ resolve packages from the module's node_modules
+RUN ln -s /app/module-1-user-management/node_modules /app/shared/node_modules
+
 WORKDIR /app/module-1-user-management
 
 EXPOSE 3001
