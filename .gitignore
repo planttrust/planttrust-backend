@@ -22,5 +22,8 @@ Thumbs.db
 # Docker
 docker-compose.override.yml
 
+# Uploads (user-generated content)
+uploads/
+
 # Frontend lives in its own repo (planttrust-frontend)
 frontend/
