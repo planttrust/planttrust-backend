@@ -10,13 +10,13 @@ The system is split into five modules, each owned by one team member who spans *
 
 | Folder | Module | Owner | Key AI Feature | Key Blockchain Feature |
 |---|---|---|---|---|
-| `module-1-user-management/` | User Management & Corporate Registry | _Nimsara Karunarathna_ | OCR + confidence scoring + vision fallback | Certificate verification lookup |
-| `module-2-marketplace/` | Investor Marketplace & Investment Lifecycle | _Thilina Dasun_ | Investment-pattern anomaly detector | XRPL NFT minting for investor tokens |
-| `module-3-mcp-ai/` | MCP-Driven Explainable AI & Chatbot | _Imesha Ariyawansha_ | Scam classifier + CBSL rule engine | Audit log retrieval w/ proof-of-inclusion |
-| `module-4-company-geofencing/` | Company Portal & Proof-of-Reality (Geofencing) | _Yasuri Pradeepika_ | dHash duplicate-detection + anti-spoofing | Milestone timeline w/ inclusion-proof badges |
-| `module-5-blockchain-audit/` | Blockchain Auditing & Regulatory Dashboard | _Mirath Nimsara_ | Digital Trust Index (weighted composite) | Core Merkle + XRPL pipeline |
+| `src/module-1-user-management/` | User Management & Corporate Registry | _Nimsara Karunarathna_ | OCR + confidence scoring + vision fallback | Certificate verification lookup |
+| `src/module-2-marketplace/` | Investor Marketplace & Investment Lifecycle | _Thilina Dasun_ | Investment-pattern anomaly detector | XRPL NFT minting for investor tokens |
+| `src/module-3-mcp-ai/` | MCP-Driven Explainable AI & Chatbot | _Imesha Ariyawansha_ | Scam classifier + CBSL rule engine | Audit log retrieval w/ proof-of-inclusion |
+| `src/module-4-geofencing/` | Company Portal & Proof-of-Reality (Geofencing) | _Yasuri Pradeepika_ | dHash duplicate-detection + anti-spoofing | Milestone timeline w/ inclusion-proof badges |
+| `src/module-5-blockchain/` | Blockchain Auditing & Regulatory Dashboard | _Mirath Nimsara_ | Digital Trust Index (weighted composite) | Core Merkle + XRPL pipeline |
 
-See each module's own `README.md` for its full scope breakdown, and `contracts/` for inter-module API specs.
+See `contracts/` for inter-module API specs and `src/database/init.sql` for the unified database schema.
 
 ## Workload Balance Across Layers
 
@@ -33,67 +33,79 @@ Each layer is scored 1–5 for relative effort (5 = hardest). Totals are within 
 ## Repository Layout
 
 ```
-planttrust-backend/               # Backend repo
-├── module-1-user-management/     # Backend: User onboarding, docs, certs
-├── module-2-marketplace/         # Backend: Escrow, NFTs, marketplace
-├── module-3-mcp-ai/              # Backend: MCP server, chatbot, scam detection
-├── module-4-company-geofencing/  # Backend: Geofence, proof-of-reality, reports
-├── module-5-blockchain-audit/    # Backend: XRPL anchoring, Trust Index, dashboard
-├── shared/                       # Common backend code: XRPL client, auth, DB, hashing
-├── contracts/                    # API contracts between modules
-├── docs/                         # Full proposal and planning documents
+planttrust-backend/               # Unified Modular Backend
+├── server.js                     # Unified Express server & route aggregator (port 3000)
+├── src/
+│   ├── module-1-user-management/ # Module 1: Auth, documents, trust certificates
+│   ├── module-2-marketplace/     # Module 2: Escrow, project listings, P2P transfers
+│   ├── module-3-mcp-ai/          # Module 3: Model Context Protocol (MCP), chatbot, scam detection
+│   ├── module-4-geofencing/      # Module 4: Polygon geofence, camera proof, progress reports
+│   ├── module-5-blockchain/      # Module 5: XRPL anchoring, Trust Index, proof verification
+│   ├── shared/                   # Shared utilities: DB pool, auth middleware, logger, hashing
+│   ├── database/                 # Unified PostgreSQL schema (init.sql) and migration runner
+│   ├── contracts/                # Inter-module contract references
+│   └── jobs/                     # Background job processors (XRPL anchoring, OCR, AI)
+├── contracts/                    # API specifications between modules (*.md)
+├── docs/                         # Full project proposal and architectural documentation
+├── tests/                        # Unified Jest test suite
 ├── .github/
-│   ├── CODEOWNERS
-│   └── workflows/ci.yml          # CI: unit tests + integration smoke tests
-├── docker-compose.yml            # Spin up 5 backends + frontend (via image) + Postgres + Redis
-├── .gitignore
+│   ├── CODEOWNERS                # Automated PR reviewer assignments
+│   └── workflows/ci.yml          # CI: Unit tests + Docker smoke tests
+├── docker-compose.yml            # Spins up Backend + Frontend (GHCR) + Postgres + Redis
+├── Dockerfile                    # Container definition for unified backend
+├── .env.example                  # Environment configuration template
+├── package.json                  # Unified dependencies & scripts
 └── README.md
 ```
 
 Frontend repo (separate):
 ```
-planttrust-frontend/              # Frontend repo
-├── src/app/                      # Next.js app router pages (one dir per module)
-├── src/components/               # Shared UI: Navbar, Footer, etc.
-├── src/lib/                      # API client config
-├── Dockerfile
+planttrust-frontend/              # Frontend repo (Next.js)
+├── src/app/                      # Next.js app router pages
+├── src/components/               # Shared UI components
+├── src/lib/                      # API client configuration
 └── package.json
 ```
 
-## Getting the Whole System Running Locally
+## Getting the System Running Locally
 
 ### Option 1: Docker Compose (recommended)
 
 ```bash
-# Start everything (Postgres, Redis, all 5 backends + frontend)
-docker-compose up
+# Start backend, database (Postgres 16), and cache (Redis 7)
+docker-compose up -d db redis backend
 
-# Or start a single backend for focused development
-docker-compose up module-1 db redis
+# Or start the complete stack including the frontend
+docker-compose up
 ```
 
-> **Note:** The frontend service in `docker-compose.yml` builds from a sibling directory (`../planttrust-frontend`). Make sure both repos are cloned side-by-side.
-
-### Option 2: Run individually
+### Option 2: Run directly with Node.js
 
 ```bash
-# Terminal 1 — Start a backend module
-cd module-1-user-management && npm install && npm run dev
+# 1. Install dependencies
+npm install
 
-# Terminal 2 — Start the frontend (from the frontend repo)
-cd ../planttrust-frontend && npm install && npm run dev
+# 2. Configure environment (copy example)
+cp .env.example .env
+
+# 3. Initialize database schema (ensure Postgres is running)
+npm run db:init
+
+# 4. Start development server
+npm run dev
+
+# 5. Run tests
+npm test
 ```
 
-Each service runs on its own port:
+### Service Endpoints
 
-| Service | Port | URL |
+| Service | Port | Health Check / Base URL |
 |---|---|---|
-| Frontend | `3000` | `http://localhost:3000` |
-| Module 1 (Backend) | `3001` | `http://localhost:3001/health` |
-| Module 2 (Backend) | `3002` | `http://localhost:3002/health` |
-| Module 3 (Backend) | `3003` | `http://localhost:3003/health` |
-| Module 4 (Backend) | `3004` | `http://localhost:3004/health` |
-| Module 5 (Backend) | `3005` | `http://localhost:3005/health` |
+| **Backend API** | `3000` | `http://localhost:3000/health` |
+| **Frontend** | `3001` (Docker) / `3000` (local) | `http://localhost:3000` |
+| **PostgreSQL** | `5432` | `localhost:5432` |
+| **Redis** | `6379` | `localhost:6379` |
 
 ## Branching Model
 

@@ -1,19 +1,25 @@
 # CODEOWNERS — PlanTrust Backend
 # Automatically requests the right reviewer when a PR touches a module's folder.
 
-/module-1-user-management/        @planttrust/module-1-user-management
-/module-2-marketplace/            @planttrust/module-2-marketplace
-/module-3-mcp-ai/                 @planttrust/module-3-mcp-ai
-/module-4-company-geofencing/     @planttrust/module-4-company-geofencing
-/module-5-blockchain-audit/       @planttrust/module-5-blockchain-audit
+/src/module-1-user-management/   @planttrust/module-1-user-management
+/src/module-2-marketplace/       @planttrust/module-2-marketplace
+/src/module-3-mcp-ai/            @planttrust/module-3-mcp-ai
+/src/module-4-geofencing/        @planttrust/module-4-geofencing
+/src/module-5-blockchain/        @planttrust/module-5-blockchain
 
-# Shared code and contracts require sign-off from more than one person by convention —
+# Shared code, contracts, and jobs require sign-off from more than one person by convention —
 # GitHub CODEOWNERS can only assign a team, so route to the full dev team here.
-/shared/                     @planttrust/planttrust-devs
-/contracts/                  @planttrust/planttrust-devs
-/docs/                       @planttrust/planttrust-devs
+/src/shared/                @planttrust/planttrust-devs
+/src/contracts/             @planttrust/planttrust-devs
+/src/jobs/                  @planttrust/planttrust-devs
+/contracts/                 @planttrust/planttrust-devs
+/docs/                      @planttrust/planttrust-devs
+/tests/                     @planttrust/planttrust-devs
 
 # CI, Docker, and repo-level config
-/.github/                    @planttrust/planttrust-devs
-docker-compose.yml           @planttrust/planttrust-devs
-.gitignore                   @planttrust/planttrust-devs
+/.github/                   @planttrust/planttrust-devs
+server.js                   @planttrust/planttrust-devs
+docker-compose.yml          @planttrust/planttrust-devs
+Dockerfile                  @planttrust/planttrust-devs
+package.json                @planttrust/planttrust-devs
+.gitignore                  @planttrust/planttrust-devs

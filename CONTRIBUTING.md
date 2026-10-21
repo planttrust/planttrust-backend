@@ -9,7 +9,7 @@ Modules communicate with each other **only through defined APIs** — never by o
 ## 2. Repository and branching structure
 
 - **Two repositories:**
-  - **`planttrust-backend`** (this repo) — all backend modules (`module-1-user-management/`, `module-2-marketplace/`, etc.), plus `shared/` for common backend code (XRPL client, auth middleware, DB connection).
+  - **`planttrust-backend`** (this repo) — unified modular backend with all five modules (`src/module-1-user-management/`, `src/module-2-marketplace/`, etc.), shared code (`src/shared/`), contracts, and tests.
   - **`planttrust-frontend`** — the Next.js frontend app, with one route per module.
 - **`main`** — always stable and demo-ready. Protected: PR + review required, no direct pushes. Only updated from `develop` after a checkpoint's integration test has passed.
 - **`develop`** — the shared weekly integration baseline. Protected: PR + at least one review required.
