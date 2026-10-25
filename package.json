@@ -2,12 +2,12 @@
   "name": "planttrust-backend",
   "version": "0.1.0",
   "private": true,
-  "description": "PlanTrust — Unified Modular Backend (User Management, Marketplace, MCP AI, Geofencing, Blockchain Audit)",
+  "description": "PlanTrust â€” Unified Modular Backend (User Management, Marketplace, MCP AI, Geofencing, Blockchain Audit)",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "jest --passWithNoTests --forceExit",
+    "test": "jest --passWithNoTests",
     "db:init": "node src/database/init.js"
   },
   "dependencies": {
@@ -31,3 +31,4 @@
     "supertest": "^7.0.0"
   }
 }
+
