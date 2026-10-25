@@ -1,7 +1,8 @@
 const { Pool } = require('pg');
+const { DATABASE_URL } = require('./config');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://planttrust:planttrust_dev@localhost:5432/planttrust',
+  connectionString: DATABASE_URL,
 });
 
 module.exports = {
