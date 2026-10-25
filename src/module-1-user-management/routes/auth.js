@@ -3,10 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../../shared/db');
+const { JWT_SECRET, JWT_EXPIRES_IN } = require('../../shared/config');
 
 const router = express.Router();
-
-const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-prod';
 
 // @route GET /api/auth
 // @desc Auth API status check
@@ -63,10 +62,11 @@ router.post('/register', async (req, res) => {
       }
     };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
     res.status(201).json({
       message: 'User registered successfully',
+      userId: newUser.id,
       token,
       user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role }
     });
@@ -107,10 +107,11 @@ router.post('/login', async (req, res) => {
       }
     };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
     res.json({
       message: 'Logged in successfully',
+      userId: user.id,
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role }
     });

@@ -10,7 +10,7 @@ describe('Health Check', () => {
   });
 });
 
-describe('Module 1 — User Management', () => {
+describe('Module 1 â€” User Management', () => {
   it('GET /api/auth should return status message', async () => {
     const res = await request(app).get('/api/auth');
     expect(res.statusCode).toBe(200);
@@ -42,7 +42,7 @@ describe('Module 1 — User Management', () => {
   });
 });
 
-describe('Module 2 — Marketplace', () => {
+describe('Module 2 â€” Marketplace', () => {
   it('GET /api/escrow should return scaffolded message', async () => {
     const res = await request(app).get('/api/escrow');
     expect(res.statusCode).toBe(200);
@@ -62,7 +62,7 @@ describe('Module 2 — Marketplace', () => {
   });
 });
 
-describe('Module 3 — MCP AI', () => {
+describe('Module 3 â€” MCP AI', () => {
   it('GET /api/mcp should return scaffolded message', async () => {
     const res = await request(app).get('/api/mcp');
     expect(res.statusCode).toBe(200);
@@ -82,7 +82,7 @@ describe('Module 3 — MCP AI', () => {
   });
 });
 
-describe('Module 4 — Geofencing', () => {
+describe('Module 4 â€” Geofencing', () => {
   it('GET /api/projects should return scaffolded message', async () => {
     const res = await request(app).get('/api/projects');
     expect(res.statusCode).toBe(200);
@@ -102,7 +102,7 @@ describe('Module 4 — Geofencing', () => {
   });
 });
 
-describe('Module 5 — Blockchain', () => {
+describe('Module 5 â€” Blockchain', () => {
   it('GET /api/audit should return scaffolded message', async () => {
     const res = await request(app).get('/api/audit');
     expect(res.statusCode).toBe(200);
@@ -128,4 +128,9 @@ describe('404 Handler', () => {
     expect(res.statusCode).toBe(404);
     expect(res.body.error).toBe('Not Found');
   });
+});
+
+afterAll(async () => {
+  const db = require('../src/shared/db');
+  await db.pool.end();
 });
