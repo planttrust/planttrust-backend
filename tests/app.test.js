@@ -10,7 +10,7 @@ describe('Health Check', () => {
   });
 });
 
-describe('Module 1 â€” User Management', () => {
+describe('Module 1 — User Management', () => {
   it('GET /api/auth should return status message', async () => {
     const res = await request(app).get('/api/auth');
     expect(res.statusCode).toBe(200);
@@ -42,7 +42,7 @@ describe('Module 1 â€” User Management', () => {
   });
 });
 
-describe('Module 2 â€” Marketplace', () => {
+describe('Module 2 — Marketplace', () => {
   it('GET /api/escrow should return scaffolded message', async () => {
     const res = await request(app).get('/api/escrow');
     expect(res.statusCode).toBe(200);
@@ -62,7 +62,7 @@ describe('Module 2 â€” Marketplace', () => {
   });
 });
 
-describe('Module 3 â€” MCP AI', () => {
+describe('Module 3 — MCP AI', () => {
   it('GET /api/mcp should return scaffolded message', async () => {
     const res = await request(app).get('/api/mcp');
     expect(res.statusCode).toBe(200);
@@ -82,7 +82,7 @@ describe('Module 3 â€” MCP AI', () => {
   });
 });
 
-describe('Module 4 â€” Geofencing', () => {
+describe('Module 4 — Geofencing', () => {
   it('GET /api/projects should return scaffolded message', async () => {
     const res = await request(app).get('/api/projects');
     expect(res.statusCode).toBe(200);
@@ -102,7 +102,7 @@ describe('Module 4 â€” Geofencing', () => {
   });
 });
 
-describe('Module 5 â€” Blockchain', () => {
+describe('Module 5 — Blockchain & Contract Aliases', () => {
   it('GET /api/audit should return scaffolded message', async () => {
     const res = await request(app).get('/api/audit');
     expect(res.statusCode).toBe(200);
@@ -115,10 +115,78 @@ describe('Module 5 â€” Blockchain', () => {
     expect(res.body.message).toContain('trust-index');
   });
 
+  it('GET /api/audit/trust-index should resolve via contract alias', async () => {
+    const res = await request(app).get('/api/audit/trust-index');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toContain('trust-index');
+  });
+
+  it('GET /api/audit/trust-index/:projectId should match contract schema', async () => {
+    const res = await request(app).get('/api/audit/trust-index/proj-kurunegala-agri');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.projectId).toBe('proj-kurunegala-agri');
+    expect(res.body.trustScore).toBeDefined();
+    expect(res.body.components).toHaveProperty('documentVerification');
+    expect(res.body.components).toHaveProperty('escrowHealth');
+    expect(res.body.components).toHaveProperty('complianceScore');
+    expect(res.body.components).toHaveProperty('geofencePassRate');
+    expect(res.body.lastUpdated).toBeDefined();
+  });
+
   it('GET /api/verify should return scaffolded message', async () => {
     const res = await request(app).get('/api/verify');
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toContain('verify');
+  });
+
+  it('GET /api/audit/verify should resolve via contract alias', async () => {
+    const res = await request(app).get('/api/audit/verify');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toContain('verify');
+  });
+
+  it('GET /api/audit/verify/:anchorId should match contract schema', async () => {
+    const res = await request(app).get('/api/audit/verify/anc-7890');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.anchorId).toBe('anc-7890');
+    expect(res.body.dataHash).toBeDefined();
+    expect(res.body.merkleRoot).toBeDefined();
+    expect(Array.isArray(res.body.merkleProof)).toBe(true);
+    expect(res.body.txHash).toBeDefined();
+    expect(res.body.verified).toBe(true);
+    expect(res.body.explorerUrl).toContain('testnet.xrpl.org');
+  });
+});
+
+describe('Configuration & Production Guards', () => {
+  const originalEnv = { ...process.env };
+
+  afterEach(() => {
+    process.env = { ...originalEnv };
+    jest.resetModules();
+  });
+
+  it('should reject missing or default JWT_SECRET when NODE_ENV=production', () => {
+    jest.isolateModules(() => {
+      process.env.NODE_ENV = 'production';
+      process.env.JWT_SECRET = 'dev-secret-change-in-prod';
+      expect(() => require('../src/shared/config')).toThrow(/FATAL: JWT_SECRET/);
+    });
+
+    jest.isolateModules(() => {
+      process.env.NODE_ENV = 'production';
+      process.env.JWT_SECRET = 'change-this-to-a-random-secret';
+      expect(() => require('../src/shared/config')).toThrow(/FATAL: JWT_SECRET/);
+    });
+  });
+
+  it('should accept secure JWT_SECRET in production', () => {
+    jest.isolateModules(() => {
+      process.env.NODE_ENV = 'production';
+      process.env.JWT_SECRET = 'strong-prod-secret-must-be-secure-32chars!';
+      const cfg = require('../src/shared/config');
+      expect(cfg.JWT_SECRET).toBe('strong-prod-secret-must-be-secure-32chars!');
+    });
   });
 });
 

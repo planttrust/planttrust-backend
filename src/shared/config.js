@@ -1,8 +1,15 @@
 require('dotenv').config();
 
 const isProd = process.env.NODE_ENV === 'production';
+const INSECURE_DEFAULTS = [
+  'dev-secret-change-in-prod',
+  'change-this-to-a-random-secret',
+  'your-secret-here',
+  'ci-test-secret',
+  'secret'
+];
 
-if (isProd && (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'dev-secret-change-in-prod')) {
+if (isProd && (!process.env.JWT_SECRET || INSECURE_DEFAULTS.includes(process.env.JWT_SECRET))) {
   throw new Error('FATAL: JWT_SECRET environment variable must be explicitly configured in production.');
 }
 
