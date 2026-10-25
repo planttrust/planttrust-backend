@@ -121,14 +121,22 @@ describe('Module 5 — Blockchain & Contract Aliases', () => {
     expect(res.body.message).toContain('trust-index');
   });
 
-  it('GET /api/audit/trust-index/:projectId should match contract schema', async () => {
+  it('GET /api/audit/trust-index/:projectId should match contract schema with frontend component alignment', async () => {
     const res = await request(app).get('/api/audit/trust-index/proj-kurunegala-agri');
     expect(res.statusCode).toBe(200);
     expect(res.body.projectId).toBe('proj-kurunegala-agri');
+    expect(res.body.isMock).toBe(true);
+    expect(res.body.status).toBe('SCAFFOLD_MOCK');
+    expect(res.body.score).toBeDefined();
     expect(res.body.trustScore).toBeDefined();
+    // Frontend-aligned fields
+    expect(res.body.components).toHaveProperty('kycVerification');
+    expect(res.body.components).toHaveProperty('escrowDiscipline');
+    expect(res.body.components).toHaveProperty('milestoneReality');
+    expect(res.body.components).toHaveProperty('complianceScore');
+    // Backend contract fields
     expect(res.body.components).toHaveProperty('documentVerification');
     expect(res.body.components).toHaveProperty('escrowHealth');
-    expect(res.body.components).toHaveProperty('complianceScore');
     expect(res.body.components).toHaveProperty('geofencePassRate');
     expect(res.body.lastUpdated).toBeDefined();
   });
@@ -145,16 +153,16 @@ describe('Module 5 — Blockchain & Contract Aliases', () => {
     expect(res.body.message).toContain('verify');
   });
 
-  it('GET /api/audit/verify/:anchorId should match contract schema', async () => {
+  it('GET /api/audit/verify/:anchorId should return scaffolded mock and not falsely claim verified', async () => {
     const res = await request(app).get('/api/audit/verify/anc-7890');
     expect(res.statusCode).toBe(200);
     expect(res.body.anchorId).toBe('anc-7890');
+    expect(res.body.isMock).toBe(true);
+    expect(res.body.status).toBe('UNVERIFIED_SCAFFOLD');
+    expect(res.body.verified).toBe(false);
     expect(res.body.dataHash).toBeDefined();
     expect(res.body.merkleRoot).toBeDefined();
     expect(Array.isArray(res.body.merkleProof)).toBe(true);
-    expect(res.body.txHash).toBeDefined();
-    expect(res.body.verified).toBe(true);
-    expect(res.body.explorerUrl).toContain('testnet.xrpl.org');
   });
 });
 
