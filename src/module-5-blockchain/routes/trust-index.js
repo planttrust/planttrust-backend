@@ -10,11 +10,19 @@ router.get('/', (req, res) => {
 router.get('/:projectId', (req, res) => {
   res.json({
     projectId: req.params.projectId,
+    score: 94,
     trustScore: 94,
+    grade: 'A+',
+    isMock: true,
+    status: 'SCAFFOLD_MOCK',
+    message: 'Scaffolded Trust Index - live multi-factor computation will be enabled in Checkpoint 2',
     components: {
+      kycVerification: 25,
+      escrowDiscipline: 30,
+      milestoneReality: 39,
+      complianceScore: 20,
       documentVerification: 96,
       escrowHealth: 95,
-      complianceScore: 20,
       geofencePassRate: 98,
     },
     lastUpdated: new Date().toISOString(),
