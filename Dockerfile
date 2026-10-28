@@ -1,18 +1,28 @@
-FROM node:20-alpine
+# Stage 1: Build TypeScript
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-# Copy dependency manifests and install
+COPY package*.json tsconfig.json ./
+RUN npm ci
+
+COPY src/ ./src/
+RUN npm run build
+
+# Stage 2: Production Runner
+FROM node:24-alpine AS runner
+
+WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci --omit=dev
 
-# Copy application source
-COPY server.js ./
-COPY src/ ./src/
+COPY --from=builder /app/dist ./dist
+COPY src/database/init.sql ./src/database/init.sql
 
 EXPOSE 3000
 
 HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
   CMD wget -qO- http://localhost:3000/health || exit 1
 
-CMD ["node", "server.js"]
+CMD ["node", "dist/server.js"]
