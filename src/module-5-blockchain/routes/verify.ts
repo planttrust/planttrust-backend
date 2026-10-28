@@ -1,13 +1,14 @@
-const express = require('express');
-const router = express.Router();
+import { Router, Request, Response } from 'express';
+
+const router = Router();
 
 // @route GET /api/verify or /api/audit/verify
-router.get('/', (req, res) => {
+router.get('/', (req: Request, res: Response) => {
   res.json({ message: 'verify API is working (scaffolded)' });
 });
 
 // @route GET /api/verify/:anchorId or /api/audit/verify/:anchorId
-router.get('/:anchorId', (req, res) => {
+router.get('/:anchorId', (req: Request, res: Response) => {
   res.json({
     anchorId: req.params.anchorId,
     dataHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
@@ -22,4 +23,4 @@ router.get('/:anchorId', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

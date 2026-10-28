@@ -1,21 +1,21 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { v4: uuidv4 } = require('uuid');
-const db = require('../../shared/db');
-const { JWT_SECRET, JWT_EXPIRES_IN } = require('../../shared/config');
+import { Router, Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
+import db from '../../shared/db';
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../../shared/config';
 
-const router = express.Router();
+const router = Router();
 
 // @route GET /api/auth
 // @desc Auth API status check
-router.get('/', (req, res) => {
+router.get('/', (req: Request, res: Response) => {
   res.json({ message: 'auth API is working' });
 });
 
 // @route POST /api/auth/register
 // @desc Register a new user
-router.post('/register', async (req, res) => {
+router.post('/register', async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, password, name, fullName, role, phone } = req.body;
     const displayName = name || fullName;
@@ -62,7 +62,7 @@ router.post('/register', async (req, res) => {
       }
     };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN as any });
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -78,7 +78,7 @@ router.post('/register', async (req, res) => {
 
 // @route POST /api/auth/login
 // @desc Authenticate user & get token
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: Request, res: Response): Promise<any> => {
   try {
     const { email, password } = req.body;
 
@@ -107,7 +107,7 @@ router.post('/login', async (req, res) => {
       }
     };
 
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN as any });
 
     res.json({
       message: 'Logged in successfully',
@@ -121,4 +121,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
