@@ -1,10 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import chatbotController from '../../controllers/ChatbotController';
 
 const router = Router();
 
-// @route GET /api/mcp
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'mcp API is working (scaffolded)' });
-});
+router.get('/', (req, res) => chatbotController.getMcp(req, res));
 
 export default router;
