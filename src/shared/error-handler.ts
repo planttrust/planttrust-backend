@@ -1,13 +1,16 @@
-const logger = require('./logger')('ErrorHandler');
+import { Request, Response, NextFunction } from 'express';
+import createLogger from './logger';
 
-const notFoundHandler = (req, res, next) => {
+const logger = createLogger('ErrorHandler');
+
+export const notFoundHandler = (req: Request, res: Response, next: NextFunction): void => {
   res.status(404).json({
     error: 'Not Found',
     message: `Route ${req.method} ${req.originalUrl} does not exist.`
   });
 };
 
-const globalErrorHandler = (err, req, res, next) => {
+export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction): void => {
   logger.error({ err, req: { method: req.method, url: req.originalUrl } }, 'Unhandled Exception');
   
   res.status(err.status || 500).json({
@@ -16,4 +19,4 @@ const globalErrorHandler = (err, req, res, next) => {
   });
 };
 
-module.exports = { notFoundHandler, globalErrorHandler };
+export default { notFoundHandler, globalErrorHandler };

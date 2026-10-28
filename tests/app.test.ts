@@ -1,5 +1,6 @@
-const request = require('supertest');
-const app = require('../server');
+import request from 'supertest';
+import app from '../src/server';
+import db from '../src/shared/db';
 
 describe('Health Check', () => {
   it('GET /health should return status ok', async () => {
@@ -129,12 +130,10 @@ describe('Module 5 — Blockchain & Contract Aliases', () => {
     expect(res.body.status).toBe('SCAFFOLD_MOCK');
     expect(res.body.score).toBeDefined();
     expect(res.body.trustScore).toBeDefined();
-    // Frontend-aligned fields
     expect(res.body.components).toHaveProperty('kycVerification');
     expect(res.body.components).toHaveProperty('escrowDiscipline');
     expect(res.body.components).toHaveProperty('milestoneReality');
     expect(res.body.components).toHaveProperty('complianceScore');
-    // Backend contract fields
     expect(res.body.components).toHaveProperty('documentVerification');
     expect(res.body.components).toHaveProperty('escrowHealth');
     expect(res.body.components).toHaveProperty('geofencePassRate');
@@ -207,6 +206,5 @@ describe('404 Handler', () => {
 });
 
 afterAll(async () => {
-  const db = require('../src/shared/db');
   await db.pool.end();
 });

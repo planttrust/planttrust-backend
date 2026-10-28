@@ -1,9 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const { pool } = require('../shared/db');
-const logger = require('../shared/logger')('DatabaseInit');
+import fs from 'fs';
+import path from 'path';
+import { pool } from '../shared/db';
+import createLogger from '../shared/logger';
 
-const initDatabase = async () => {
+const logger = createLogger('DatabaseInit');
+
+export const initDatabase = async (): Promise<boolean> => {
   const sqlPath = path.join(__dirname, 'init.sql');
   const sql = fs.readFileSync(sqlPath, 'utf8');
 
@@ -18,7 +20,6 @@ const initDatabase = async () => {
   }
 };
 
-// Execute directly if run via CLI
 if (require.main === module) {
   initDatabase()
     .then(() => {
@@ -31,4 +32,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = initDatabase;
+export default initDatabase;

@@ -1,13 +1,14 @@
-const express = require('express');
-const router = express.Router();
+import { Router, Request, Response } from 'express';
+
+const router = Router();
 
 // @route GET /api/trust-index or /api/audit/trust-index
-router.get('/', (req, res) => {
+router.get('/', (req: Request, res: Response) => {
   res.json({ message: 'trust-index API is working (scaffolded)' });
 });
 
 // @route GET /api/trust-index/:projectId or /api/audit/trust-index/:projectId
-router.get('/:projectId', (req, res) => {
+router.get('/:projectId', (req: Request, res: Response) => {
   res.json({
     projectId: req.params.projectId,
     score: 94,
@@ -29,4 +30,4 @@ router.get('/:projectId', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;
