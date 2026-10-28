@@ -1,33 +1,9 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import auditController from '../../controllers/AuditController';
 
 const router = Router();
 
-// @route GET /api/trust-index or /api/audit/trust-index
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'trust-index API is working (scaffolded)' });
-});
-
-// @route GET /api/trust-index/:projectId or /api/audit/trust-index/:projectId
-router.get('/:projectId', (req: Request, res: Response) => {
-  res.json({
-    projectId: req.params.projectId,
-    score: 94,
-    trustScore: 94,
-    grade: 'A+',
-    isMock: true,
-    status: 'SCAFFOLD_MOCK',
-    message: 'Scaffolded Trust Index - live multi-factor computation will be enabled in Checkpoint 2',
-    components: {
-      kycVerification: 25,
-      escrowDiscipline: 30,
-      milestoneReality: 39,
-      complianceScore: 20,
-      documentVerification: 96,
-      escrowHealth: 95,
-      geofencePassRate: 98,
-    },
-    lastUpdated: new Date().toISOString(),
-  });
-});
+router.get('/', (req, res) => auditController.getTrustIndex(req, res));
+router.get('/:projectId', (req, res) => auditController.getTrustIndex(req, res));
 
 export default router;

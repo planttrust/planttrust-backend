@@ -1,10 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import geofenceController from '../../controllers/GeofenceController';
 
 const router = Router();
 
-// @route GET /api/reports
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'reports API is working (scaffolded)' });
-});
+router.get('/', (req, res) => geofenceController.getReports(req, res));
 
 export default router;

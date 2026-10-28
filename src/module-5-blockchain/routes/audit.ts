@@ -1,10 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import auditController from '../../controllers/AuditController';
 
 const router = Router();
 
-// @route GET /api/audit
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'audit API is working (scaffolded)' });
-});
+router.get('/', (req, res) => auditController.getAudit(req, res));
 
 export default router;

@@ -1,10 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import marketplaceController from '../../controllers/MarketplaceController';
 
 const router = Router();
 
-// @route GET /api/listings
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'listings API is working (scaffolded)' });
-});
+router.get('/', (req, res) => marketplaceController.getListings(req, res));
 
 export default router;

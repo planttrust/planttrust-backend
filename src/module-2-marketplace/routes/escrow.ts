@@ -1,10 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import marketplaceController from '../../controllers/MarketplaceController';
 
 const router = Router();
 
-// @route GET /api/escrow
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'escrow API is working (scaffolded)' });
-});
+router.get('/', (req, res) => marketplaceController.getEscrow(req, res));
 
 export default router;

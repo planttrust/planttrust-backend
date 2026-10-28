@@ -1,10 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import documentController from '../../controllers/DocumentController';
 
 const router = Router();
 
-// @route GET /api/documents
-router.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'documents API is working (scaffolded)' });
-});
+router.get('/', (req, res) => documentController.getDocuments(req, res));
 
 export default router;
