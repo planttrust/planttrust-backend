@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  company_id UUID,
+  company_id UUID REFERENCES users(id) ON DELETE SET NULL,
   document_type VARCHAR(100) NOT NULL, -- 'deed', 'corporate_registry', 'tax_clearance'
   file_name VARCHAR(255) NOT NULL,
   file_path VARCHAR(500) NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS documents (
 
 CREATE TABLE IF NOT EXISTS certificates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  company_id UUID,
+  company_id UUID REFERENCES users(id) ON DELETE SET NULL,
   user_id UUID REFERENCES users(id) ON DELETE SET NULL,
   certificate_number VARCHAR(100) UNIQUE NOT NULL,
   status VARCHAR(50) NOT NULL DEFAULT 'active', -- 'active', 'revoked'
@@ -95,6 +95,17 @@ CREATE TABLE IF NOT EXISTS p2p_transfers (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS escrow_state_transitions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  escrow_id UUID REFERENCES escrow_records(id) ON DELETE CASCADE,
+  from_state VARCHAR(50),
+  to_state VARCHAR(50) NOT NULL,
+  triggered_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  anchor_id VARCHAR(100),
+  xrpl_tx_hash VARCHAR(100),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ─── Module 3: MCP-Driven Explainable AI & Chatbot ───────────────────────────
 
 CREATE TABLE IF NOT EXISTS scam_typologies (
@@ -117,6 +128,17 @@ CREATE TABLE IF NOT EXISTS scam_reports (
   typology_matches JSONB,
   status VARCHAR(50) NOT NULL DEFAULT 'pending', -- 'pending', 'confirmed_scam', 'cleared'
   xrpl_tx_hash VARCHAR(100),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS contract_clauses (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+  clause_text TEXT NOT NULL,
+  risk_flag VARCHAR(100) NOT NULL,
+  severity VARCHAR(50) NOT NULL DEFAULT 'medium', -- 'low', 'medium', 'high', 'critical'
+  cbsl_reference VARCHAR(100),
+  anchor_id VARCHAR(100),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -181,6 +203,17 @@ CREATE TABLE IF NOT EXISTS trust_index (
   calculated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS trust_index_components (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  trust_index_id UUID REFERENCES trust_index(id) ON DELETE CASCADE,
+  company_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  document_verification NUMERIC(5, 2) NOT NULL DEFAULT 0.00,
+  escrow_health NUMERIC(5, 2) NOT NULL DEFAULT 0.00,
+  compliance_score NUMERIC(5, 2) NOT NULL DEFAULT 0.00,
+  geofence_pass_rate NUMERIC(5, 2) NOT NULL DEFAULT 0.00,
+  calculated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ─── Indexes for High-Velocity Queries ───────────────────────────────────────
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
@@ -190,6 +223,9 @@ CREATE INDEX IF NOT EXISTS idx_certificates_company ON certificates(company_id);
 CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
 CREATE INDEX IF NOT EXISTS idx_escrow_project ON escrow_records(project_id);
 CREATE INDEX IF NOT EXISTS idx_escrow_investor ON escrow_records(investor_id);
+CREATE INDEX IF NOT EXISTS idx_escrow_transitions_escrow ON escrow_state_transitions(escrow_id);
+CREATE INDEX IF NOT EXISTS idx_contract_clauses_project ON contract_clauses(project_id);
 CREATE INDEX IF NOT EXISTS idx_audit_data_hash ON audit_trail(data_hash);
 CREATE INDEX IF NOT EXISTS idx_audit_source_module ON audit_trail(source_module);
 CREATE INDEX IF NOT EXISTS idx_trust_index_company ON trust_index(company_id);
+CREATE INDEX IF NOT EXISTS idx_trust_index_components_company ON trust_index_components(company_id);
