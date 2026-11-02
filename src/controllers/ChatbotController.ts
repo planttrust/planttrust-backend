@@ -8,12 +8,30 @@ export class ChatbotController {
     res.json(this.service.getMcpStatus());
   }
 
+  public queryMcp(req: Request, res: Response): void {
+    try {
+      const { method, params } = req.body || {};
+      res.json(this.service.queryMcp(method, params));
+    } catch (err: any) {
+      res.status(400).json({ error: err.message || 'Invalid MCP query' });
+    }
+  }
+
   public getChatbot(req: Request, res: Response): void {
     res.json(this.service.getChatbotStatus());
   }
 
   public getScam(req: Request, res: Response): void {
     res.json(this.service.getScamStatus());
+  }
+
+  public checkScam(req: Request, res: Response): void {
+    try {
+      const { text } = req.body || {};
+      res.json(this.service.checkScam(text));
+    } catch (err: any) {
+      res.status(400).json({ error: err.message || 'Invalid scam check request' });
+    }
   }
 }
 

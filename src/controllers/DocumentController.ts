@@ -11,6 +11,12 @@ export class DocumentController {
   public getCertificates(req: Request, res: Response): void {
     res.json(this.service.getCertificatesStatus());
   }
+
+  public verifyCertificate(req: Request, res: Response): void {
+    const rawId = req.params.id;
+    const id = Array.isArray(rawId) ? rawId[0] : rawId;
+    res.json(this.service.verifyCertificate(id));
+  }
 }
 
 export default new DocumentController();
