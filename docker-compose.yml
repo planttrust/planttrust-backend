@@ -1,16 +1,19 @@
-# PlanTrust â€” Docker Compose
+
+# PlanTrust — Docker Compose
 # Starts the unified backend, the frontend, the shared database, and Redis.
 #
 # Prerequisites:
 #   Both repos must be cloned side-by-side:
 #     parent-dir/
-#     â”œâ”€â”€ planttrust-backend/    (this repo â€” backend)
-#     â””â”€â”€ planttrust-frontend/   (frontend repo)
+#     ├── planttrust-backend/    (this repo — backend)
+#     └── planttrust-frontend/   (frontend repo)
 #
 # Usage: docker-compose up (from this repo's root)
 
 services:
-  # â”€â”€â”€ Shared Infrastructure â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─────────────────────────────────────────────────────────────
+  # Shared Infrastructure
+  # ─────────────────────────────────────────────────────────────
   db:
     image: postgres:16-alpine
     container_name: planttrust-db
@@ -42,7 +45,9 @@ services:
       timeout: 3s
       retries: 5
 
-  # â”€â”€â”€ Backend: Unified Node.js Server â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─────────────────────────────────────────────────────────────
+  # Backend: Unified Node.js Server
+  # ─────────────────────────────────────────────────────────────
   backend:
     build:
       context: .
@@ -64,7 +69,9 @@ services:
       redis:
         condition: service_healthy
 
-  # â”€â”€â”€ Frontend: Next.js App (from GHCR) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  # ─────────────────────────────────────────────────────────────
+  # Frontend: Next.js App (from GHCR)
+  # ─────────────────────────────────────────────────────────────
   frontend:
     image: ghcr.io/planttrust/planttrust-frontend:latest
     container_name: planttrust-frontend
