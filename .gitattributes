@@ -1,0 +1,6 @@
+# GitHub language statistics (Linguist)
+# Docs and the Postman collection are documentation, not source code.
+docs/** linguist-documentation
+contracts/** linguist-documentation
+# Build output is generated and never counted.
+dist/** linguist-generated
