@@ -41,6 +41,15 @@ describe('Module 1 — User Management', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toContain('certificates');
   });
+
+  it('GET /api/certificates/:id/verify should return honest scaffolded verification status', async () => {
+    const res = await request(app).get('/api/certificates/cert-9876/verify');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.certificateId).toBe('cert-9876');
+    expect(res.body.verified).toBe(false);
+    expect(res.body.status).toBe('UNVERIFIED_SCAFFOLD');
+    expect(res.body.isMock).toBe(true);
+  });
 });
 
 describe('Module 2 — Marketplace', () => {
@@ -48,6 +57,25 @@ describe('Module 2 — Marketplace', () => {
     const res = await request(app).get('/api/escrow');
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toContain('escrow');
+  });
+
+  it('POST /api/escrow/fund should transition CREATED -> FUNDED and return 201', async () => {
+    const res = await request(app).post('/api/escrow/fund').send({
+      projectId: 'proj-kurunegala-agri',
+      investorId: '00000000-0000-0000-0000-000000000003',
+      amount: 2500,
+    });
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('FUNDED');
+    expect(res.body.amount).toBe(2500);
+    expect(res.body.isMock).toBe(true);
+  });
+
+  it('GET /api/escrow/:escrowId/history should return state transition history', async () => {
+    const res = await request(app).get('/api/escrow/esc-001/history');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.escrowId).toBe('esc-001');
+    expect(Array.isArray(res.body.transitions)).toBe(true);
   });
 
   it('GET /api/listings should return scaffolded message', async () => {
@@ -70,6 +98,17 @@ describe('Module 3 — MCP AI', () => {
     expect(res.body.message).toContain('mcp');
   });
 
+  it('POST /api/mcp/query should return JSON-RPC 2.0 scaffolded response', async () => {
+    const res = await request(app).post('/api/mcp/query').send({
+      method: 'verify_company_registration',
+      params: { companyName: 'GreenAgri Plantations PLC' },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.jsonrpc).toBe('2.0');
+    expect(res.body.result.method).toBe('verify_company_registration');
+    expect(res.body.result.isMock).toBe(true);
+  });
+
   it('GET /api/chatbot should return scaffolded message', async () => {
     const res = await request(app).get('/api/chatbot');
     expect(res.statusCode).toBe(200);
@@ -80,6 +119,15 @@ describe('Module 3 — MCP AI', () => {
     const res = await request(app).get('/api/scam');
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toContain('scam');
+  });
+
+  it('POST /api/scam/check should flag suspicious keywords against CBSL rules', async () => {
+    const res = await request(app).post('/api/scam/check').send({
+      text: 'Invest today for guaranteed returns and double your money with 100% profit!',
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.overallRisk).toBe('high');
+    expect(res.body.flags.length).toBeGreaterThanOrEqual(3);
   });
 });
 
@@ -101,6 +149,21 @@ describe('Module 4 — Geofencing', () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toContain('geofence');
   });
+
+  it('POST /api/geofence/check should evaluate ray-casting point-in-polygon', async () => {
+    const res = await request(app).post('/api/geofence/check').send({
+      polygon: [
+        { latitude: 7.48, longitude: 80.35 },
+        { latitude: 7.50, longitude: 80.35 },
+        { latitude: 7.50, longitude: 80.38 },
+        { latitude: 7.48, longitude: 80.38 },
+      ],
+      point: { latitude: 7.49, longitude: 80.36 },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.body.isInside).toBe(true);
+    expect(res.body.algorithm).toBe('ray-casting');
+  });
 });
 
 describe('Module 5 — Blockchain & Contract Aliases', () => {
@@ -108,6 +171,41 @@ describe('Module 5 — Blockchain & Contract Aliases', () => {
     const res = await request(app).get('/api/audit');
     expect(res.statusCode).toBe(200);
     expect(res.body.message).toContain('audit');
+  });
+
+  it('POST /api/audit/anchor should queue valid SHA-256 event hash and return 201', async () => {
+    const res = await request(app).post('/api/audit/anchor').send({
+      sourceModule: 'module-1',
+      eventType: 'CERTIFICATE_ISSUED',
+      dataHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      metadata: { certificateId: 'cert-9876' },
+    });
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('queued');
+    expect(res.body.anchorId).toBeDefined();
+    expect(res.body.batchId).toBeDefined();
+    expect(res.body.txHash).toBeNull();
+  });
+
+  it('POST /api/audit/anchor should reject invalid SHA-256 dataHash with 400', async () => {
+    const res = await request(app).post('/api/audit/anchor').send({
+      sourceModule: 'module-1',
+      eventType: 'CERTIFICATE_ISSUED',
+      dataHash: 'not-a-valid-sha256',
+    });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Invalid dataHash format');
+  });
+
+  it('POST /api/audit/mint should queue XLS-20 NFT mint stub and return 201', async () => {
+    const res = await request(app).post('/api/audit/mint').send({
+      investorId: '00000000-0000-0000-0000-000000000003',
+      projectId: 'proj-kurunegala-agri',
+      amount: 1000,
+    });
+    expect(res.statusCode).toBe(201);
+    expect(res.body.status).toBe('queued');
+    expect(res.body.isMock).toBe(true);
   });
 
   it('GET /api/trust-index should return scaffolded message', async () => {
