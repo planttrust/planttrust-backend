@@ -1,0 +1,6 @@
+// Module 5 – Blockchain Audit & Trust Index
+// Owner: Mirath. Only the M5 owner edits this file.
+//
+// Add M5's models here in Sprint 1 (audit trail, Merkle batches, Trust Index,
+// Trust Index components). Other modules never read these tables directly: they call
+// auditService or trustIndexService in src/modules/m5-audit/m5.service.ts.

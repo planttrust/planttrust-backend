@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+coverage/
+
+# Environment files (secrets)
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Files uploaded during local development
+uploads/
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

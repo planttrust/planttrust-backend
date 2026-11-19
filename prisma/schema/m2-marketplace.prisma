@@ -1,0 +1,6 @@
+// Module 2 – Investor Marketplace & Escrow
+// Owner: Thilina. Only the M2 owner edits this file.
+//
+// Add M2's models here in Sprint 1 (investments, escrow records, escrow state transitions,
+// P2P transfers). Other modules never read these tables directly: they call listingService
+// or escrowService in src/modules/m2-marketplace/m2.service.ts.
