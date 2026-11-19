@@ -43,6 +43,7 @@ npm run dev
 ```
 
 4. Run the tests with `npm test`.
+5. Install the Postman desktop app, then **Import** both files from `postman/`, choose the **PlantTrust local** environment and send **API health** (details in the README's Postman section).
 
 ## Workflow for every task
 
@@ -57,10 +58,11 @@ npm run dev
 
 3. **Contract first, then code.** Update `contracts/mX-*.md`, then work only in your own module folder and your own `.prisma` file.
 4. **Commit and push often**, with the ClickUp ID in the message, e.g. `Add listings route CU-z8q7hbv36c`.
-5. **Open a pull request into `develop`:**
+5. **Keep Postman up to date.** When you add or change a route, add or update its request in your module's folder in Postman, export the collection (right-click → Export, Collection v2.1) over `postman/PlantTrust.postman_collection.json`, and commit it in the same PR. Never put real passwords in the exported file: use the environment's _current value_.
+6. **Open a pull request into `develop`:**
    - Title: `[S1·M2] Project listing CU-z8q7hbv36c`
    - Body: `Closes #3` (your GitHub issue number), so the issue closes when the PR merges.
-6. **Review and merge.** One teammate approves, CI passes, and then you merge.
+7. **Review and merge.** One teammate approves, CI passes, and then you merge.
 
 The `CU-…` ID makes your branch, commits and PR show up on the ClickUp task. When **both** your backend and frontend issues are closed, the ClickUp task is set to **complete** automatically (`.github/workflows/clickup-sync.yml`). Reopening an issue moves the task back to **in progress**.
 
