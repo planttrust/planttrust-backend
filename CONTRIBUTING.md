@@ -28,7 +28,7 @@ Each module documents its routes and exported functions in `contracts/mX-*.md`. 
 
 ## One-time setup
 
-1. Install Git, Node.js 20 LTS, Docker Desktop and VS Code.
+1. Install Git, Node.js 24 LTS, Docker Desktop and VS Code.
 2. Accept the GitHub invitation to the `planttrust` organisation, and check you can open the ClickUp folder "PlantTrust Sprints".
 3. Clone and start the backend (PowerShell):
 
@@ -36,7 +36,7 @@ Each module documents its routes and exported functions in `contracts/mX-*.md`. 
 git clone https://github.com/planttrust/planttrust-backend
 cd planttrust-backend
 Copy-Item .env.example .env
-docker compose up -d
+docker compose up -d          # PostgreSQL on localhost:5433 (not 5432, to avoid clashing with a local install)
 npm install
 npx prisma migrate dev
 npm run dev
