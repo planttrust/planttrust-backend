@@ -1,6 +1,11 @@
 // Module 1 – User Management & Corporate Registry
-// Owner: Nimsara. Only the M1 owner edits this file.
+// Owner: Nimsara. Only the M1 owner edits this file (see the conventions in base.prisma).
 //
-// Add M1's models here in Sprint 1 (users, investor/company/admin profiles, documents,
-// certificates). Other modules never read these tables directly: they call userService
-// in src/modules/m1-users/m1.service.ts.
+// Tables from the ER design, added in the sprint that first needs them:
+//   Sprint 1: users, investors, companies, admins   ← merge first (days 1–3): almost every table links to users,
+//                                                     and projects (M4) and trust_index (M5) link to companies
+//   Sprint 2: documents
+//   Sprint 4: certificates
+//
+// Links to other modules: certificates.batch_id → merkle_batch (M5).
+// Other modules never read these tables directly: they call userService in src/modules/m1-users/m1.service.ts.

@@ -1,6 +1,13 @@
 // Module 4 – Company Portal & Geofencing
-// Owner: Yasuri. Only the M4 owner edits this file.
+// Owner: Yasuri. Only the M4 owner edits this file (see the conventions in base.prisma).
 //
-// Add M4's models here in Sprint 1 (projects, project polygons, progress reports).
+// Tables from the ER design, added in the sprint that first needs them:
+//   Sprint 1: projects, milestones, geofence_areas   ← merge projects early (days 1–3): investments (M2),
+//                                                      chatbot_conversations and contract_clauses (M3) link to it
+//   Sprint 2: progress_reports, evidence_images, exif_data, geofence_validations
+//   Sprint 3: image_verifications, report_reviews
+//
+// Links to other modules: projects.company_id → companies (M1), progress_reports.submitted_by → users (M1),
+// report_reviews.reviewer_id → users (M1).
 // Other modules never read these tables directly: they call projectService
 // in src/modules/m4-geofencing/m4.service.ts.

@@ -1,6 +1,11 @@
 // Module 5 – Blockchain Audit & Trust Index
-// Owner: Mirath. Only the M5 owner edits this file.
+// Owner: Mirath. Only the M5 owner edits this file (see the conventions in base.prisma).
 //
-// Add M5's models here in Sprint 1 (audit trail, Merkle batches, Trust Index,
-// Trust Index components). Other modules never read these tables directly: they call
-// auditService or trustIndexService in src/modules/m5-audit/m5.service.ts.
+// Tables from the ER design, added in the sprint that first needs them:
+//   Sprint 1: merkle_batch, audit_record, trust_index, trust_index_components
+//   Sprint 2: blockchain_anchor
+//   Sprint 4: nft_record (open question: may overlap with investment_nfts in M2; decide before Sprint 4)
+//
+// Links to other modules: trust_index.company_id → companies (M1); certificates.batch_id (M1) → merkle_batch.
+// Other modules never read these tables directly: they call auditService or trustIndexService
+// in src/modules/m5-audit/m5.service.ts.

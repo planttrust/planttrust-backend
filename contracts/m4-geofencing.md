@@ -33,8 +33,9 @@ Planned: `POST /projects` (company only), `GET /projects/mine`, `POST /check` (S
 
 ## Database tables (owned by this module)
 
-To be added in Sprint 1 in `prisma/schema/m4-geofencing.prisma`: projects, project polygons,
-progress reports.
+From the ER design (`Diagrams/ER Diagrams`), in `prisma/schema/m4-geofencing.prisma`:
+projects, milestones, geofence_areas (Sprint 1, projects merged early in days 1–3); progress_reports, evidence_images, exif_data, geofence_validations (Sprint 2); image_verifications, report_reviews (Sprint 3).
+Other modules never read them directly. Naming and cross-module links: see `prisma/schema/base.prisma`.
 
 ## Change log
 

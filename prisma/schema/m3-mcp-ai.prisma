@@ -1,6 +1,10 @@
 // Module 3 – MCP AI & Scam Detection
-// Owner: Imesha. Only the M3 owner edits this file.
+// Owner: Imesha. Only the M3 owner edits this file (see the conventions in base.prisma).
 //
-// Add M3's models here in Sprint 1 (scam typologies, scam reports, contract clauses,
-// risk flags, chatbot conversations). Other modules never read these tables directly:
-// they call scamService in src/modules/m3-mcp-ai/m3.service.ts.
+// Tables from the ER design, added in the sprint that first needs them:
+//   Sprint 1: chatbot_conversations, chatbot_messages, scam_typologies (seeded with CBSL typologies), scam_reports
+//   Sprint 3: scam_report_typologies, contract_clauses, compliance_verdicts
+//
+// Links to other modules: chatbot_conversations.user_id → users (M1), chatbot_conversations.project_id → projects (M4),
+// scam_reports.reporter_id → users (M1), contract_clauses.project_id → projects (M4).
+// Other modules never read these tables directly: they call scamService in src/modules/m3-mcp-ai/m3.service.ts.

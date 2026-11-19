@@ -1,6 +1,13 @@
 // Module 2 – Investor Marketplace & Escrow
-// Owner: Thilina. Only the M2 owner edits this file.
+// Owner: Thilina. Only the M2 owner edits this file (see the conventions in base.prisma).
 //
-// Add M2's models here in Sprint 1 (investments, escrow records, escrow state transitions,
-// P2P transfers). Other modules never read these tables directly: they call listingService
-// or escrowService in src/modules/m2-marketplace/m2.service.ts.
+// Tables from the ER design, added in the sprint that first needs them:
+//   Sprint 1: investments, escrow_ledger, escrow_state_transitions, p2p_transfers
+//   Sprint 4: investment_nfts
+//   Sprint 5: investment_anomaly_flags
+//
+// Links to other modules: investments.investor_id → users (M1), investments.project_id → projects (M4),
+// escrow_state_transitions.triggered_by → users (M1), p2p_transfers.from_investor_id / to_investor_id → users (M1),
+// investment_nfts.investor_id → users (M1).
+// Other modules never read these tables directly: they call listingService or escrowService
+// in src/modules/m2-marketplace/m2.service.ts.

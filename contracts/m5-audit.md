@@ -46,8 +46,9 @@ Planned: `GET /verify/:hash`, `GET /dashboard` (regulator) in Sprint 1, `GET /pr
 
 ## Database tables (owned by this module)
 
-To be added in Sprint 1 in `prisma/schema/m5-audit.prisma`: audit trail, Merkle batches,
-Trust Index, Trust Index components.
+From the ER design (`Diagrams/ER Diagrams`), in `prisma/schema/m5-audit.prisma`:
+merkle_batch, audit_record, trust_index, trust_index_components (Sprint 1); blockchain_anchor (Sprint 2); nft_record (Sprint 4).
+Other modules never read them directly. Naming and cross-module links: see `prisma/schema/base.prisma`.
 
 ## Change log
 

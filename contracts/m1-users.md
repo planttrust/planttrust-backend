@@ -48,8 +48,9 @@ Planned: `POST /register`, `POST /login`, `POST /logout`, `GET /me` (Sprint 1), 
 
 ## Database tables (owned by this module)
 
-To be added in Sprint 1 in `prisma/schema/m1-users.prisma`: users, investor / company / admin profiles,
-documents, certificates.
+From the ER design (`Diagrams/ER Diagrams`), in `prisma/schema/m1-users.prisma`:
+users, investors, companies, admins (Sprint 1, merged first in days 1–3); documents (Sprint 2); certificates (Sprint 4).
+Other modules never read them directly. Naming and cross-module links: see `prisma/schema/base.prisma`.
 
 ## Change log
 

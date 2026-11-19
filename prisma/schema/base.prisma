@@ -1,5 +1,17 @@
 // Shared Prisma settings. Changed only by the team leader.
 // Each module's models live in their own file in this folder.
+//
+// Table design: the team's ER diagrams (Diagrams/ER Diagrams/planttrust-er-documentation.pdf), 34 tables.
+//
+// Conventions for every module file:
+// - Model names in PascalCase, mapped to the ER table name:   model EscrowLedger { ... @@map("escrow_ledger") }
+//   Field names in camelCase, mapped to the ER column name:   projectId String @map("project_id")
+// - A link to another module's table: add the @relation in your own file. Prisma also needs the opposite
+//   field on the other model (e.g. `investments Investment[]` on Project). Add that one line in the other
+//   module's file in the same PR; CODEOWNERS asks its owner to review it. That is the only change allowed
+//   in another module's file. Code still reads other modules' data only through their service functions.
+// - Sprint 1 order: M1 (users, companies) and M4 (projects) merge their tables first, in days 1–3,
+//   because most other tables link to them.
 
 generator client {
   provider = "prisma-client-js"

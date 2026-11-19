@@ -34,8 +34,9 @@ investor id taken from the login token), `GET /escrow/:projectId/history` (Sprin
 
 ## Database tables (owned by this module)
 
-To be added in Sprint 1 in `prisma/schema/m2-marketplace.prisma`: investments, escrow records,
-escrow state transitions, P2P transfers.
+From the ER design (`Diagrams/ER Diagrams`), in `prisma/schema/m2-marketplace.prisma`:
+investments, escrow_ledger, escrow_state_transitions, p2p_transfers (Sprint 1); investment_nfts (Sprint 4); investment_anomaly_flags (Sprint 5).
+Other modules never read them directly. Naming and cross-module links: see `prisma/schema/base.prisma`.
 
 ## Change log
 

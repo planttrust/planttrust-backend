@@ -26,8 +26,9 @@ Planned: `POST /rpc` (MCP JSON-RPC 2.0: `tools/list`, `tools/call`) and `POST /c
 
 ## Database tables (owned by this module)
 
-To be added in Sprint 1 in `prisma/schema/m3-mcp-ai.prisma`: scam typologies, scam reports,
-contract clauses, risk flags, chatbot conversations.
+From the ER design (`Diagrams/ER Diagrams`), in `prisma/schema/m3-mcp-ai.prisma`:
+chatbot_conversations, chatbot_messages, scam_typologies, scam_reports (Sprint 1); scam_report_typologies, contract_clauses, compliance_verdicts (Sprint 3).
+Other modules never read them directly. Naming and cross-module links: see `prisma/schema/base.prisma`.
 
 ## Change log
 
