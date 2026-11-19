@@ -5,7 +5,21 @@
 ## Exported functions (for other modules)
 
 Other modules import these only from `src/modules/m1-users/m1.service.ts`.
-The shared `requireAuth` / `requireRole` middleware and `signToken` live in `src/shared/auth.ts`.
+The shared `requireAuth` / `requireRole` middleware, `signToken`, `setSessionCookie` and
+`clearSessionCookie` live in `src/shared/auth.ts`.
+
+## Login session (httpOnly cookie)
+
+The browser never sees the login token. M1's routes manage it as a cookie:
+
+- `POST /login`: checks the password, then `setSessionCookie(res, signToken({ id, role }))`.
+  The cookie `plantrust_session` is `HttpOnly`, `SameSite=Lax`, 8 hours, `Secure` when `COOKIE_SECURE=true`.
+- `POST /logout`: `clearSessionCookie(res)`, then `204`.
+- `GET /me` (`requireAuth`): returns `{ id, role, name }` for the logged-in user, or `401`.
+  The frontend's `AuthProvider` calls it to find out who is logged in.
+
+`requireAuth` reads the cookie first and falls back to an `Authorization: Bearer <token>` header
+(for Postman, tests and M3's MCP tools).
 
 ### `userService.getById(userId: string): Promise<UserSummary | null>`
 
@@ -29,7 +43,7 @@ Base path: `/api/users`
 | ------ | --------- | ----------- | ------------ | -------------------- |
 | GET    | `/health` | none        | –            | `{ module, status }` |
 
-Planned: `POST /register`, `POST /login`, `GET /me` (Sprint 1), `POST /documents` (Sprint 2),
+Planned: `POST /register`, `POST /login`, `POST /logout`, `GET /me` (Sprint 1), `POST /documents` (Sprint 2),
 `POST /admin/review/:docId` (Sprint 3), `GET /certificates/:id/verify` (public, Sprint 4).
 
 ## Database tables (owned by this module)
@@ -40,3 +54,4 @@ documents, certificates.
 ## Change log
 
 - 2026-11-19: created from the Week 0 scaffold stubs.
+- 2026-11-19: login session moved to an httpOnly cookie; added `POST /logout` and the `/me` response shape.
