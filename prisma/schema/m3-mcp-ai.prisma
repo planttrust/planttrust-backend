@@ -1,0 +1,6 @@
+// Module 3 – MCP AI & Scam Detection
+// Owner: Imesha. Only the M3 owner edits this file.
+//
+// Add M3's models here in Sprint 1 (scam typologies, scam reports, contract clauses,
+// risk flags, chatbot conversations). Other modules never read these tables directly:
+// they call scamService in src/modules/m3-mcp-ai/m3.service.ts.
