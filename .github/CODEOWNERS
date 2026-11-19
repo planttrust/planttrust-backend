@@ -1,0 +1,24 @@
+# GitHub automatically asks these people to review PRs that change their files.
+# Last matching line wins.
+
+*                                   @Kaveesha-04
+
+/src/modules/m1-users/              @Kaveesha-04
+/prisma/schema/m1-users.prisma      @Kaveesha-04
+/contracts/m1-users.md              @Kaveesha-04
+
+/src/modules/m2-marketplace/        @DasunWTT
+/prisma/schema/m2-marketplace.prisma @DasunWTT
+/contracts/m2-marketplace.md        @DasunWTT
+
+/src/modules/m3-mcp-ai/             @sandadewi
+/prisma/schema/m3-mcp-ai.prisma     @sandadewi
+/contracts/m3-mcp-ai.md             @sandadewi
+
+/src/modules/m4-geofencing/         @yasuripradeepika
+/prisma/schema/m4-geofencing.prisma @yasuripradeepika
+/contracts/m4-geofencing.md         @yasuripradeepika
+
+/src/modules/m5-audit/              @Mirath-Nimsara
+/prisma/schema/m5-audit.prisma      @Mirath-Nimsara
+/contracts/m5-audit.md              @Mirath-Nimsara
