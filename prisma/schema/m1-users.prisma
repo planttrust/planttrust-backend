@@ -1,0 +1,6 @@
+// Module 1 – User Management & Corporate Registry
+// Owner: Nimsara. Only the M1 owner edits this file.
+//
+// Add M1's models here in Sprint 1 (users, investor/company/admin profiles, documents,
+// certificates). Other modules never read these tables directly: they call userService
+// in src/modules/m1-users/m1.service.ts.

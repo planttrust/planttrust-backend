@@ -1,0 +1,6 @@
+// Module 4 – Company Portal & Geofencing
+// Owner: Yasuri. Only the M4 owner edits this file.
+//
+// Add M4's models here in Sprint 1 (projects, project polygons, progress reports).
+// Other modules never read these tables directly: they call projectService
+// in src/modules/m4-geofencing/m4.service.ts.
