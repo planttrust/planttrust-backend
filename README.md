@@ -67,6 +67,23 @@ contracts/             each module's exported functions and HTTP routes
 | M4 Company Portal & Geofencing          | Yasuri  | `/api/geofencing`  |
 | M5 Blockchain Audit & Trust Index       | Mirath  | `/api/audit`       |
 
+## Postman
+
+The team's Postman collection and environment live in `postman/`.
+
+1. In the Postman desktop app: **Import** → drag in both files from `postman/`.
+2. Choose the **PlantTrust local** environment (top right).
+3. With the backend running, send **API health**. Every request has a test that shows pass or fail
+   in the **Test Results** tab.
+
+To log in, put your local test account in the environment's **current value** for `demoEmail` and
+`demoPassword` (it stays on your computer), then send **M1 Users → Login**. Postman keeps the session
+cookie and sends it with later requests.
+
+**When you add or change a route:** add or update its request in your module's folder, export the
+collection (right-click → Export, Collection v2.1) over `postman/PlantTrust.postman_collection.json`, and
+commit it in the same PR as the route.
+
 ## Working on the project
 
 - How we work (branches, PRs, ClickUp IDs, team rules): [CONTRIBUTING.md](CONTRIBUTING.md)
