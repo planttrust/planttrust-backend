@@ -4,13 +4,13 @@ PlantTrust is built by five people, and each person owns one module. This guide 
 
 ## Modules and owners
 
-| Module | Owner | Backend folder | Prisma file |
-|---|---|---|---|
-| M1 User Management & Corporate Registry | Nimsara | `src/modules/m1-users/` | `prisma/schema/m1-users.prisma` |
-| M2 Investor Marketplace & Escrow | Thilina | `src/modules/m2-marketplace/` | `prisma/schema/m2-marketplace.prisma` |
-| M3 MCP AI & Scam Detection | Imesha | `src/modules/m3-mcp-ai/` | `prisma/schema/m3-mcp-ai.prisma` |
-| M4 Company Portal & Geofencing | Yasuri | `src/modules/m4-geofencing/` | `prisma/schema/m4-geofencing.prisma` |
-| M5 Blockchain Audit & Trust Index | Mirath | `src/modules/m5-audit/` | `prisma/schema/m5-audit.prisma` |
+| Module                                  | Owner   | Backend folder                | Prisma file                           |
+| --------------------------------------- | ------- | ----------------------------- | ------------------------------------- |
+| M1 User Management & Corporate Registry | Nimsara | `src/modules/m1-users/`       | `prisma/schema/m1-users.prisma`       |
+| M2 Investor Marketplace & Escrow        | Thilina | `src/modules/m2-marketplace/` | `prisma/schema/m2-marketplace.prisma` |
+| M3 MCP AI & Scam Detection              | Imesha  | `src/modules/m3-mcp-ai/`      | `prisma/schema/m3-mcp-ai.prisma`      |
+| M4 Company Portal & Geofencing          | Yasuri  | `src/modules/m4-geofencing/`  | `prisma/schema/m4-geofencing.prisma`  |
+| M5 Blockchain Audit & Trust Index       | Mirath  | `src/modules/m5-audit/`       | `prisma/schema/m5-audit.prisma`       |
 
 `src/shared/` (database client, auth, XRPL client, error handling) is shared infrastructure. Changes to it go through the team leader.
 
@@ -81,13 +81,13 @@ The `CU-…` ID makes your branch, commits and PR show up on the ClickUp task. W
 
 ## Sprint calendar
 
-| | Dates |
-|---|---|
-| Week 0 (setup) | 18 – 22 Nov |
-| Sprint 1 | 23 Nov – 6 Dec |
-| Sprint 2 | 7 – 20 Dec |
-| Sprint 3 | 21 Dec – 3 Jan |
-| Sprint 4 | 4 – 17 Jan |
-| Sprint 5 | 18 – 31 Jan (feature freeze 28 Jan) |
+|                | Dates                               |
+| -------------- | ----------------------------------- |
+| Week 0 (setup) | 18 – 22 Nov                         |
+| Sprint 1       | 23 Nov – 6 Dec                      |
+| Sprint 2       | 7 – 20 Dec                          |
+| Sprint 3       | 21 Dec – 3 Jan                      |
+| Sprint 4       | 4 – 17 Jan                          |
+| Sprint 5       | 18 – 31 Jan (feature freeze 28 Jan) |
 
 Plan and progress: [GitHub project board](https://github.com/orgs/planttrust/projects/1) · ClickUp folder "PlantTrust Sprints (23 Nov – 31 Jan)".
