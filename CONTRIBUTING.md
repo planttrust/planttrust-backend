@@ -109,7 +109,7 @@ if (!investor) throw forbidden('Investor is not verified');
 
 - Pull `develop` right before you run `npm run db:migrate`.
 - One migration per PR, named after your module and change: `npm run db:migrate -- --name m2_investments`.
-- M1 (users, companies) and M4 (projects) merge their tables first, by **Tue 25 Nov**. The others pull `develop` after that, then migrate.
+- M1 (users, companies) and M4 (projects) merge their tables first, by **Wed 25 Nov**. The others pull `develop` after that, then migrate.
 - If Prisma reports drift on your machine, reset your local database (`npx prisma migrate reset`), which also runs `npm run db:seed`.
 - Never edit a migration that is already merged into `develop`. Add a new one instead.
 
