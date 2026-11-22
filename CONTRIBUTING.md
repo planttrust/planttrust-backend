@@ -69,11 +69,49 @@ The `CU-…` ID makes your branch, commits and PR show up on the ClickUp task. W
 ## Team rules
 
 - Never edit another person's module. If you need something from it, ask the owner to export a function.
-- Only change your own `.prisma` file. If migrations conflict, pull `develop` and run `npx prisma migrate dev` again.
+- Only change your own `.prisma` file. See [Database rules](#database-rules) below.
 - Never push directly to `main` or `develop`. The repository rules block it, and every change needs a PR with one approval.
 - Review your teammates' PRs within a day, because everyone is blocked without an approval.
 - Add tests for every route and every exported service function.
 - Never commit `.env` files, API keys or wallet seeds.
+
+## Database rules
+
+Each owner designs their own tables in their own `.prisma` file. These three rules stop the files from conflicting.
+
+**1. Across modules, store only the ID.** Use a plain `String` field with an index and no Prisma `@relation`, and check the ID through the other module's service. Inside your own module, use normal Prisma relations.
+
+```prisma
+model Investment {
+  id         String   @id @default(uuid())
+  projectId  String   // M4 project: checked with projectService.getById()
+  investorId String   // M1 user: checked with userService.getVerified()
+  amount     Decimal
+  createdAt  DateTime @default(now())
+  escrow     EscrowLedger? // same module: normal Prisma relation
+
+  @@index([projectId])
+  @@index([investorId])
+  @@map("investments")
+}
+```
+
+```ts
+const project = await projectService.getById(input.projectId);
+if (!project) throw badRequest('Project not found');
+const investor = await userService.getVerified(investorId);
+if (!investor) throw forbidden('Investor is not verified');
+```
+
+**2. Names.** Start enum names with your module's topic so they never clash (`UserRole`, `KycStatus`, `EscrowState`, `ScamRiskLevel`, `ReportStatus`, `AnchorStatus`). Name models after the ER table in PascalCase and map them to the ER name with `@@map("table_name")`.
+
+**3. Migrations.**
+
+- Pull `develop` right before you run `npm run db:migrate`.
+- One migration per PR, named after your module and change: `npm run db:migrate -- --name m2_investments`.
+- M1 (users, companies) and M4 (projects) merge their tables first, by **Tue 25 Nov**. The others pull `develop` after that, then migrate.
+- If Prisma reports drift on your machine, reset your local database (`npx prisma migrate reset`), which also runs `npm run db:seed`.
+- Never edit a migration that is already merged into `develop`. Add a new one instead.
 
 ## End of each sprint
 
