@@ -20,7 +20,7 @@ This is a **single backend**, not microservices. Each module folder contains:
 
 - `mX.routes.ts`: the HTTP routes the frontend calls, mounted at `/api/<module>`
 - `mX.service.ts`: the **only** file other modules may import
-- `mX.test.ts`: Jest tests for the module
+- `mX.test.ts`: the module's tests (Vitest + Supertest)
 
 To use another module, call its exported service function (for example `projectService.getById()` or `auditService.anchor()`). Never query another module's tables. If the function isn't ready yet, call its stub. The stub already has the final signature, so your code won't need to change later.
 
@@ -35,14 +35,16 @@ Each module documents its routes and exported functions in `contracts/mX-*.md`. 
 ```powershell
 git clone https://github.com/planttrust/planttrust-backend
 cd planttrust-backend
+git checkout develop          # we work from develop, not main
 Copy-Item .env.example .env
 docker compose up -d          # PostgreSQL on localhost:5433 (not 5432, to avoid clashing with a local install)
 npm install
-npx prisma migrate dev
-npm run dev
+npm run db:migrate            # applies the database migrations
+npm run db:seed               # demo accounts and data (from Sprint 1)
+npm run dev                   # http://localhost:4000/api/health
 ```
 
-4. Run the tests with `npm test`.
+4. Before you push, run the same checks as CI: `npm run format:check`, `npm run lint`, `npm run typecheck`, `npm test` and `npm run build` (`npm run format` fixes formatting).
 5. Install the Postman desktop app, then **Import** both files from `postman/`, choose the **PlantTrust local** environment and send **API health** (details in the README's Postman section).
 
 ## Workflow for every task
