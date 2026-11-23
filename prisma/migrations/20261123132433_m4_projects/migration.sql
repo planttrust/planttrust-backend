@@ -2,6 +2,9 @@
 CREATE TYPE "ProjectStatus" AS ENUM ('draft', 'open', 'funded', 'completed');
 
 -- CreateEnum
+CREATE TYPE "ProjectDocumentType" AS ENUM ('LAND_DEED', 'SURVEY_PLAN', 'OTHER');
+
+-- CreateEnum
 CREATE TYPE "ReportStatus" AS ENUM ('pending', 'verified', 'rejected', 'flagged');
 
 -- CreateTable
@@ -14,7 +17,6 @@ CREATE TABLE "projects" (
     "photoUrl" TEXT,
     "location" TEXT NOT NULL,
     "district" TEXT NOT NULL,
-    "documents" JSONB NOT NULL DEFAULT '[]',
     "fundingGoal" DECIMAL(14,2) NOT NULL,
     "expectedReturnPct" DECIMAL(5,2) NOT NULL,
     "durationMonths" INTEGER NOT NULL,
@@ -46,6 +48,19 @@ CREATE TABLE "project_polygons" (
 );
 
 -- CreateTable
+CREATE TABLE "project_documents" (
+    "id" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
+    "documentType" "ProjectDocumentType" NOT NULL,
+    "name" TEXT NOT NULL,
+    "url" TEXT NOT NULL,
+    "fileHash" TEXT NOT NULL,
+    "uploadedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "project_documents_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "progress_reports" (
     "id" TEXT NOT NULL,
     "projectId" TEXT NOT NULL,
@@ -73,10 +88,16 @@ CREATE INDEX "projects_status_idx" ON "projects"("status");
 CREATE UNIQUE INDEX "project_polygons_projectId_key" ON "project_polygons"("projectId");
 
 -- CreateIndex
+CREATE INDEX "project_documents_projectId_idx" ON "project_documents"("projectId");
+
+-- CreateIndex
 CREATE INDEX "progress_reports_projectId_idx" ON "progress_reports"("projectId");
 
 -- AddForeignKey
 ALTER TABLE "project_polygons" ADD CONSTRAINT "project_polygons_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "project_documents" ADD CONSTRAINT "project_documents_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "progress_reports" ADD CONSTRAINT "progress_reports_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "projects"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -58,9 +58,20 @@ interface Milestone {
   description?: string;
 }
 
-interface ProjectDocument {
+type ProjectDocumentType = 'LAND_DEED' | 'SURVEY_PLAN' | 'OTHER';
+
+// What the client sends for each document
+interface ProjectDocumentInput {
+  documentType: ProjectDocumentType;
   name: string; // e.g. "Land deed"
   url: string; // from the shared upload helper
+  fileHash: string; // SHA-256 of the file, 64 lowercase hex chars
+}
+
+// What the server returns
+interface ProjectDocument extends ProjectDocumentInput {
+  id: string; // documentId: the refId of M5 DOCUMENT_UPLOADED
+  uploadedAt: string; // ISO date-time
 }
 ```
 
@@ -80,7 +91,7 @@ interface RegisterProjectInput {
   district: string; // one of Sri Lanka's 25 districts
   boundary: LatLng[]; // the land polygon drawn on the map (rules below)
   // 3. Documents
-  documents: ProjectDocument[]; // may be empty in Sprint 1
+  documents: ProjectDocumentInput[]; // may be empty in Sprint 1
   // 4. Funding & terms
   fundingGoal: number; // LKR, > 0
   expectedReturnPct: number; // 0–100
@@ -102,10 +113,40 @@ interface RegisterProjectInput {
 What happens:
 
 1. The company is checked with `userService.getVerified(companyId)`; if `null` → `403 FORBIDDEN`.
-2. The project and its polygon are saved together. The server works out `areaHectares` and the
-   centroid from the boundary.
-3. `auditService.anchor('PROJECT_REGISTERED', projectId, { companyId, title, fundingGoal, boundary })`
-   is called and the returned `anchorId` is stored on the project.
+2. The project, its polygon and its documents are saved together in one transaction. The server
+   works out `areaHectares` and the centroid from the boundary.
+3. After the transaction commits, the project is anchored with M5 (payload as agreed in
+   `contracts/m5-audit.md`; M4 sends hashes, never the raw boundary or documents):
+
+   ```ts
+   auditService.anchor('PROJECT_REGISTERED', projectId, {
+     projectId,
+     companyId,
+     polygonHash, // SHA-256 of the saved boundary ring (JSON of LatLng[]), lowercase hex
+     areaHectares, // number
+     fundingGoal, // number, LKR
+     documentHashes, // fileHash of each document, in the order sent
+     registeredAt, // ISO date-time (the project's createdAt)
+   });
+   ```
+
+   The returned `anchorId` is stored on the project.
+
+4. Each document is anchored too:
+
+   ```ts
+   auditService.anchor('DOCUMENT_UPLOADED', documentId, {
+     documentId,
+     projectId,
+     companyId,
+     documentType, // 'LAND_DEED' | 'SURVEY_PLAN' | 'OTHER'
+     fileHash,
+     uploadedAt, // ISO date-time
+   });
+   ```
+
+**Document rules** (otherwise `400 VALIDATION_ERROR`): `documentType` is one of the three values,
+`name` and `url` are non-empty, `fileHash` is 64 lowercase hex characters.
 
 ```ts
 interface ProjectDetail extends ProjectSummary {
@@ -116,7 +157,7 @@ interface ProjectDetail extends ProjectSummary {
   boundary: LatLng[]; // closed ring, as saved
   centroid: LatLng; // for centring the map
   areaHectares: number;
-  documents: ProjectDocument[];
+  documents: ProjectDocument[]; // oldest first
   expectedReturnPct: number;
   durationMonths: number;
   milestones: Milestone[];
@@ -142,17 +183,27 @@ All errors use the shared shape `{ error: { code, message, details? } }`:
 
 Defined in `prisma/schema/m4-geofencing.prisma`. Other modules never read them directly.
 
-| Model            | Table              | Notes                                                          |
-| ---------------- | ------------------ | -------------------------------------------------------------- |
-| `Project`        | `projects`         | `companyId` is a plain M1 id (indexed, no relation)            |
-| `ProjectPolygon` | `project_polygons` | one per project: boundary points, centroid, bounding box, area |
-| `ProgressReport` | `progress_reports` | used from Sprint 3; geotagged photo + `insideBoundary` result  |
+| Model             | Table               | Notes                                                          |
+| ----------------- | ------------------- | -------------------------------------------------------------- |
+| `Project`         | `projects`          | `companyId` is a plain M1 id (indexed, no relation)            |
+| `ProjectPolygon`  | `project_polygons`  | one per project: boundary points, centroid, bounding box, area |
+| `ProjectDocument` | `project_documents` | land documents: `documentType`, `name`, `url`, `fileHash`      |
+| `ProgressReport`  | `progress_reports`  | used from Sprint 3; geotagged photo + `insideBoundary` result  |
 
-Enums: `ProjectStatus` (`draft`, `open`, `funded`, `completed`), `ReportStatus` (`pending`, `verified`,
-`rejected`, `flagged`).
+Enums: `ProjectStatus` (`draft`, `open`, `funded`, `completed`), `ProjectDocumentType` (`LAND_DEED`,
+`SURVEY_PLAN`, `OTHER`), `ReportStatus` (`pending`, `verified`, `rejected`, `flagged`).
+
+`fundingGoal`, `expectedReturnPct` and `areaHectares` are `Decimal` in the database;
+`projectService` converts them to `number` in every response.
+
+**Known gap (Sprint 3):** M5's `PROGRESS_REPORT` needs `milestoneId` and `photoHashes`. Milestones
+are JSON without ids and reports have one `photoUrl`, so a Sprint 3 migration will add a
+`project_milestones` table and report photos with hashes.
 
 ## Change log
 
 - 2026-11-19: created from the Week 0 scaffold stubs.
 - 2026-11-23: Sprint 1 routes (`POST /projects`, `GET /projects/mine`, `POST /check`), request and
-  response shapes, and the M4 tables.
+  response shapes, and the M4 tables. Aligned with the M5 contract: `PROJECT_REGISTERED` sends
+  hashes (`polygonHash`, `documentHashes`), documents moved to the `project_documents` table with
+  an id, `documentType` and `fileHash`, and `DOCUMENT_UPLOADED` is sent per document.

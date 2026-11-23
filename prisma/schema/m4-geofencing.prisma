@@ -11,6 +11,12 @@ enum ProjectStatus {
   completed
 }
 
+enum ProjectDocumentType {
+  LAND_DEED
+  SURVEY_PLAN
+  OTHER
+}
+
 enum ReportStatus {
   pending
   verified
@@ -27,7 +33,6 @@ model Project {
   photoUrl          String?
   location          String
   district          String
-  documents         Json          @default("[]") // { name, url }[]
   fundingGoal       Decimal       @db.Decimal(14, 2) // LKR
   expectedReturnPct Decimal       @db.Decimal(5, 2)
   durationMonths    Int
@@ -39,6 +44,7 @@ model Project {
   updatedAt         DateTime      @updatedAt
 
   polygon         ProjectPolygon?
+  documents       ProjectDocument[]
   progressReports ProgressReport[]
 
   @@index([companyId])
@@ -62,6 +68,21 @@ model ProjectPolygon {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("project_polygons")
+}
+
+model ProjectDocument {
+  id           String              @id @default(uuid()) // refId of M5 DOCUMENT_UPLOADED
+  projectId    String
+  documentType ProjectDocumentType
+  name         String // e.g. "Land deed"
+  url          String // from the shared upload helper
+  fileHash     String // SHA-256 of the file, lowercase hex
+  uploadedAt   DateTime            @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_documents")
 }
 
 model ProgressReport {
