@@ -16,17 +16,17 @@ Other modules import these only from `src/modules/m5-audit/m5.service.ts`.
 
 ### AnchorType — agreed event contract
 
-| Event | Sender | When it fires | refId |
-|---|---|---|---|
-| `PROJECT_REGISTERED` | M4 | Project registration, Sprint 1 | projectId |
-| `DOCUMENT_UPLOADED` | M1 / M4 | User document or land document uploaded | docId / documentId |
-| `KYC_DECISION` | M1 | KYC decision, Sprint 3 | userId |
-| `INVESTMENT_CREATED` | M2 | Investment and PENDING escrow created | investmentId |
-| `ESCROW_STATE_CHANGED` | M2 | Escrow transitions to COMMITTED, LOCKED, RELEASED or CANCELLED | transitionId |
-| `OWNERSHIP_TRANSFER` | M2 | P2P ownership transfer committed | transferId |
-| `PROGRESS_REPORT` | M4 | Progress report submitted, Sprints 3–4 | progressReportId |
-| `CERTIFICATE` | M1 | Certificate issued, Sprint 4 | certificateId |
-| `SCAM_FLAG` | M3 | Medium/high flag raised or flag cleared by an admin | riskFlagId |
+| Event                  | Sender  | When it fires                                                  | refId              |
+| ---------------------- | ------- | -------------------------------------------------------------- | ------------------ |
+| `PROJECT_REGISTERED`   | M4      | Project registration, Sprint 1                                 | projectId          |
+| `DOCUMENT_UPLOADED`    | M1 / M4 | User document or land document uploaded                        | docId / documentId |
+| `KYC_DECISION`         | M1      | KYC decision, Sprint 3                                         | userId             |
+| `INVESTMENT_CREATED`   | M2      | Investment and PENDING escrow created                          | investmentId       |
+| `ESCROW_STATE_CHANGED` | M2      | Escrow transitions to COMMITTED, LOCKED, RELEASED or CANCELLED | transitionId       |
+| `OWNERSHIP_TRANSFER`   | M2      | P2P ownership transfer committed                               | transferId         |
+| `PROGRESS_REPORT`      | M4      | Progress report submitted, Sprints 3–4                         | progressReportId   |
+| `CERTIFICATE`          | M1      | Certificate issued, Sprint 4                                   | certificateId      |
+| `SCAM_FLAG`            | M3      | Medium/high flag raised or flag cleared by an admin            | riskFlagId         |
 
 The M2 events `INVESTMENT_FUNDED` and `ESCROW_RELEASED` are replaced by `INVESTMENT_CREATED` and `ESCROW_STATE_CHANGED`.
 
@@ -169,9 +169,9 @@ M4 sends hashes rather than raw land boundaries, documents or photographs. SHA-2
 
 Base path: `/api/audit`
 
-| Method | Path | Auth / role | Request body | Response |
-|---|---|---|---|---|
-| GET | `/health` | None | – | `{ module, status }` |
+| Method | Path      | Auth / role | Request body | Response             |
+| ------ | --------- | ----------- | ------------ | -------------------- |
+| GET    | `/health` | None        | –            | `{ module, status }` |
 
 Planned: `GET /verify/:hash` and `GET /dashboard` (regulator) in Sprint 1; `GET /trust-index/:companyId` (public) in Sprint 3; `GET /proof/:hash` in Sprint 4.
 
