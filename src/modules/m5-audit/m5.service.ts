@@ -4,13 +4,12 @@ export type AnchorType =
   | 'PROJECT_REGISTERED'
   | 'DOCUMENT_UPLOADED'
   | 'KYC_DECISION'
-  | 'INVESTMENT_FUNDED'
-  | 'ESCROW_RELEASED'
+  | 'INVESTMENT_CREATED'
+  | 'ESCROW_STATE_CHANGED'
   | 'PROGRESS_REPORT'
   | 'CERTIFICATE'
   | 'SCAM_FLAG'
   | 'OWNERSHIP_TRANSFER';
-
 export interface AnchorReceipt {
   anchorId: string;
   hash: string;
