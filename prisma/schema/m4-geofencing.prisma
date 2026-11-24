@@ -1,6 +1,106 @@
 // Module 4 – Company Portal & Geofencing
 // Owner: Yasuri. Only the M4 owner edits this file.
 //
-// Add M4's models here in Sprint 1 (projects, project polygons, progress reports).
 // Other modules never read these tables directly: they call projectService
 // in src/modules/m4-geofencing/m4.service.ts.
+
+enum ProjectStatus {
+  draft
+  open
+  funded
+  completed
+}
+
+enum ProjectDocumentType {
+  LAND_DEED
+  SURVEY_PLAN
+  OTHER
+}
+
+enum ReportStatus {
+  pending
+  verified
+  rejected
+  flagged
+}
+
+model Project {
+  id                String        @id @default(uuid())
+  companyId         String // M1 user (company): checked with userService.getVerified()
+  title             String
+  description       String
+  cropType          String
+  photoUrl          String?
+  location          String
+  district          String
+  fundingGoal       Decimal       @db.Decimal(14, 2) // LKR
+  expectedReturnPct Decimal       @db.Decimal(5, 2)
+  durationMonths    Int
+  milestones        Json          @default("[]") // { title, targetDate, description? }[]
+  risks             String        @default("")
+  status            ProjectStatus @default(open)
+  anchorId          String? // M5 receipt for PROJECT_REGISTERED
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  polygon         ProjectPolygon?
+  documents       ProjectDocument[]
+  progressReports ProgressReport[]
+
+  @@index([companyId])
+  @@index([status])
+  @@map("projects")
+}
+
+model ProjectPolygon {
+  id           String   @id @default(uuid())
+  projectId    String   @unique
+  points       Json // closed ring of { lat, lng }
+  centroidLat  Float
+  centroidLng  Float
+  minLat       Float // bounding box: quick reject before ray casting
+  maxLat       Float
+  minLng       Float
+  maxLng       Float
+  areaHectares Decimal  @db.Decimal(12, 4)
+  createdAt    DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_polygons")
+}
+
+model ProjectDocument {
+  id           String              @id @default(uuid()) // refId of M5 DOCUMENT_UPLOADED
+  projectId    String
+  documentType ProjectDocumentType
+  name         String // e.g. "Land deed"
+  url          String // from the shared upload helper
+  fileHash     String // SHA-256 of the file, lowercase hex
+  uploadedAt   DateTime            @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_documents")
+}
+
+model ProgressReport {
+  id             String       @id @default(uuid())
+  projectId      String
+  title          String
+  description    String
+  photoUrl       String?
+  latitude       Float? // from the photo's GPS data
+  longitude      Float?
+  insideBoundary Boolean? // result of the point-in-polygon check
+  status         ReportStatus @default(pending)
+  anchorId       String? // M5 receipt for PROGRESS_REPORT
+  submittedAt    DateTime     @default(now())
+  reviewedAt     DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("progress_reports")
+}
