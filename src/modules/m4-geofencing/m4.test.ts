@@ -26,6 +26,8 @@ const boundary = [
   { lat: 7.29, lng: 80.63 },
 ];
 
+const fileHash = 'a'.repeat(64);
+
 const validBody = {
   title: 'Hantana tea restoration',
   description: 'Replanting a hill-country tea estate.',
@@ -33,7 +35,14 @@ const validBody = {
   location: 'Hantana',
   district: 'Kandy',
   boundary,
-  documents: [{ name: 'Land deed', url: 'https://example.com/deed.pdf' }],
+  documents: [
+    {
+      documentType: 'LAND_DEED',
+      name: 'Land deed',
+      url: 'https://example.com/deed.pdf',
+      fileHash,
+    },
+  ],
   fundingGoal: 12_000_000,
   expectedReturnPct: 12.5,
   durationMonths: 36,
@@ -113,7 +122,15 @@ describe('m4-geofencing', () => {
       expect(res.body.centroid.lat).toBeCloseTo(7.295, 5);
       expect(res.body.anchorId).toMatch(/\S+/);
 
-      expect(anchor).toHaveBeenCalledOnce();
+      expect(res.body.documents).toEqual([
+        {
+          ...validBody.documents[0],
+          id: expect.any(String),
+          uploadedAt: expect.any(String),
+        },
+      ]);
+
+      expect(anchor).toHaveBeenCalledTimes(2);
       const [type, refId, data] = anchor.mock.calls[0];
       expect(type).toBe('PROJECT_REGISTERED');
       expect(refId).toBe(res.body.id);
@@ -123,10 +140,34 @@ describe('m4-geofencing', () => {
         polygonHash: expect.stringMatching(/^[0-9a-f]{64}$/),
         areaHectares: res.body.areaHectares,
         fundingGoal: 12_000_000,
-        documentHashes: [expect.stringMatching(/^[0-9a-f]{64}$/)],
+        documentHashes: [fileHash],
         registeredAt: res.body.createdAt,
       });
       expect(JSON.stringify(data)).not.toContain('80.63'); // no raw coordinates
+
+      const doc = res.body.documents[0];
+      expect(anchor.mock.calls[1]).toEqual([
+        'DOCUMENT_UPLOADED',
+        doc.id,
+        {
+          documentId: doc.id,
+          projectId: res.body.id,
+          companyId: companyA,
+          documentType: 'LAND_DEED',
+          fileHash,
+          uploadedAt: doc.uploadedAt,
+        },
+      ]);
+    });
+
+    it('rejects a document whose fileHash is not a SHA-256 hash (400)', async () => {
+      const documents = [{ ...validBody.documents[0], fileHash: 'not-a-hash' }];
+      expect((await register(tokenA, { ...validBody, documents })).status).toBe(400);
+    });
+
+    it('rejects an unknown document type (400)', async () => {
+      const documents = [{ ...validBody.documents[0], documentType: 'PASSPORT' }];
+      expect((await register(tokenA, { ...validBody, documents })).status).toBe(400);
     });
 
     it('still saves the project if anchoring fails', async () => {

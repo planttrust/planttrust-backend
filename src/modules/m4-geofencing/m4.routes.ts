@@ -57,7 +57,16 @@ const registerProjectBody = z.object({
   boundary,
   // 3. Documents
   documents: z
-    .array(z.object({ name: z.string().trim().min(1).max(200), url: z.url() }))
+    .array(
+      z.object({
+        documentType: z.enum(['LAND_DEED', 'SURVEY_PLAN', 'OTHER']),
+        name: z.string().trim().min(1).max(200),
+        url: z.url(),
+        fileHash: z
+          .string()
+          .regex(/^[0-9a-f]{64}$/, 'fileHash must be a SHA-256 hash: 64 lowercase hex characters'),
+      }),
+    )
     .max(20)
     .default([]),
   // 4. Funding & terms
