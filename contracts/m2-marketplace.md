@@ -70,11 +70,11 @@ export interface Listing {
   expectedReturn: number;
   duration: number;
   photo: string | null;
-  status: 'open' | 'funded';
+  status: "open" | "funded";
   anchorId: string | null;
   trustIndex: number | null; // 0-100 from M5; null until available
   riskRank: number | null; // 1 = lowest risk; null until Trust Index is live
-  certificateStatus: 'active' | 'revoked' | 'none'; // from M1; 'none' until available
+  certificateStatus: "active" | "revoked" | "none"; // from M1; 'none' until available
 }
 ```
 
@@ -95,7 +95,8 @@ The API does not need a separate percentage field.
 M4 owns the project status. M2 starts from M4's status and may only raise it to `'funded'`.
 
 ```ts
-status = m4.status === 'funded' || fundedAmount >= fundingGoal ? 'funded' : 'open';
+status =
+  m4.status === "funded" || fundedAmount >= fundingGoal ? "funded" : "open";
 ```
 
 - M2 never lowers a status that M4 reports as `'funded'`, and never changes M4's project status.
@@ -152,7 +153,7 @@ Until D1 is decided, Sprint 3 work on `release()` must not start.
 export interface EscrowReleaseResult {
   projectId: string;
   reportId: string;
-  status: 'RELEASED' | 'BLOCKED' | 'REJECTED';
+  status: "RELEASED" | "BLOCKED" | "REJECTED";
   // RELEASED = money released; BLOCKED = high risk, state stays LOCKED;
   // REJECTED = nothing to release or transition not allowed
   amount: number; // total released, 0 if not RELEASED
@@ -168,7 +169,12 @@ Sprint 1 stub. No actual money movement is implemented.
 ### 2.3 Escrow states and transitions
 
 ```ts
-export type EscrowState = 'PENDING' | 'COMMITTED' | 'LOCKED' | 'RELEASED' | 'CANCELLED';
+export type EscrowState =
+  | "PENDING"
+  | "COMMITTED"
+  | "LOCKED"
+  | "RELEASED"
+  | "CANCELLED";
 ```
 
 | From      | Allowed next states  | Who can trigger                                             |
@@ -372,14 +378,27 @@ The existing M4 `ProjectSummary` currently does not provide all fields required 
 M4 must expose the following additional project information through its service:
 
 - `district`
-- `crop`
-- `expectedReturn`
-- `duration`
-- `photo`
+- `cropType`
+- `expectedReturnPct`
+- `durationMonths`
+- `photoUrl`
 - `anchorId`
-- `companyId` (needed to read the Trust Index and the certificate status; M2 does not return it publicly)
+- `companyId` (needed to read the Trust Index and certificate status; M2 does not return it publicly)
 
 The shared `ProjectSummary` interface must provide the existing fields and these additional fields.
+
+**M2 field mapping:**
+
+M2 maps the M4 `ProjectSummary` fields to the public Listing fields as follows:
+
+| M4 ProjectSummary field | M2 Listing field |
+| ----------------------- | ---------------- |
+| `cropType`              | `crop`           |
+| `expectedReturnPct`     | `expectedReturn` |
+| `durationMonths`        | `duration`       |
+| `photoUrl`              | `photo`          |
+
+M2 must preserve the other required fields, including `district`, `anchorId`, and `companyId` internally. `companyId` must not appear in public Listing responses.
 
 M4's `listOpen()` must provide both `open` and `funded` projects for marketplace listing purposes.
 
@@ -448,7 +467,7 @@ M2 must not create duplicate `SCAM_FLAG` events. M3 is responsible for anchoring
 M2 uses:
 
 - `auditService.anchor(type, refId, data)`
-- `trustIndexService.get(companyId)` (Trust Index snapshot and ranking; ask M5 for a batch version `getMany(companyIds)`)
+- `trustIndexService.get(companyId)` returns a `TrustIndex` object containing `companyId`, `score`, `components`, and `updatedAt`. M2 must use `.score` when it needs the numerical Trust Index.
 - `auditService.mint()` (Sprint 4, see 6.4)
 
 Source:
@@ -623,8 +642,6 @@ M2 must use the event types defined in M5's `AnchorType`:
 - `OWNERSHIP_TRANSFER`
 
 These event types were agreed with M5 on 2026-11-22.
-
-Confirm that `INVESTMENT_FUNDED` and `ESCROW_RELEASED` have been removed from M5's contract and `m5.service.ts` before implementing Sprint 2 audit calls.
 
 ### 6.1 INVESTMENT_CREATED
 
@@ -840,22 +857,22 @@ Every implemented M2 route and exported service function must have tests.
 
 These items need agreement from other module owners. Until an owner confirms, the status stays **Pending**. When agreed, change it to `Agreed (date, link to the comment or pull request)`.
 
-| #   | Item                                                                                                                                                                              | With             | Needed by                                  | Status  | Until agreed                                                                                                 |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------ |
-| 1   | M4 `ProjectSummary` adds `district`, `crop`, `expectedReturn`, `duration`, `photo`, `anchorId` and `companyId`                                                                    | M4               | Sprint 1 (before the listing PR is merged) | Pending | M2 tests use a mocked `projectService`. Do not merge the listing PR until M4's service returns these fields. |
-| 2   | M4 `listOpen()` returns projects with status `open` and `funded`                                                                                                                  | M4               | Sprint 1                                   | Pending | Same as above.                                                                                               |
-| 3   | M4 alone sets and changes the project status. M2 never writes it (see Listing status)                                                                                             | M4               | Sprint 1                                   | Pending | Follow the rule in 2.1.                                                                                      |
-| 4   | Release rule D1 (final milestone or tranches) and `projectService.isFinalMilestoneReport(reportId)`                                                                               | M4               | Before Sprint 2                            | Pending | Do not start `release()`.                                                                                    |
-| 5   | M4 calls `escrowService.release()` only after its approval is committed, and handles `BLOCKED` and `REJECTED`                                                                     | M4               | Sprint 3                                   | Pending | –                                                                                                            |
-| 6   | `userService.getVerified(userId)`: what "verified" means for an Investor (email verified or KYC) and what it returns                                                              | M1               | Sprint 2                                   | Pending | Use a stub that returns verified.                                                                            |
-| 7   | `certificateService.getStatus(companyId)` returning `'active' \| 'revoked' \| 'none'`                                                                                             | M1               | Sprint 2 (optional for Sprint 1)           | Pending | Return `'none'`.                                                                                             |
-| 8   | Role names: the code has `regulator`, the report treats the Admin as the regulator. Admin routes in 3.5 and 3.6 use `admin`                                                       | M1 / team leader | Sprint 2                                   | Pending | Use `admin` only.                                                                                            |
-| 9   | M5 `AnchorType` contains `INVESTMENT_CREATED`, `ESCROW_STATE_CHANGED`, `OWNERSHIP_TRANSFER`; `INVESTMENT_FUNDED` and `ESCROW_RELEASED` are removed (contract and `m5.service.ts`) | M5               | Before Sprint 2 (was due 2026-11-22)       | Pending | Do not send audit events.                                                                                    |
-| 10  | M5 removes duplicates by `(type, refId)`                                                                                                                                          | M5               | Sprint 2                                   | Pending | –                                                                                                            |
-| 11  | `trustIndexService.get(companyId)` returns `number \| null`; add `getMany(companyIds)` for ranking                                                                                | M5               | Sprint 2 (get), Sprint 3 (getMany)         | Pending | `trustIndex` and `riskRank` stay `null`.                                                                     |
-| 12  | `auditService.mint()`: called after COMMITTED, `escrowRef` is the escrow record id, returns `nftId` and `txHash`                                                                  | M5               | Sprint 4                                   | Pending | –                                                                                                            |
-| 13  | `scamService.riskCheck()` levels: high blocks, medium proceeds with the level in the reason                                                                                       | M3               | Sprint 3                                   | Pending | –                                                                                                            |
-| 14  | A shared notification service for emails on state changes                                                                                                                         | Team leader      | Sprint 2                                   | Pending | Log the event only.                                                                                          |
+| #   | Item                                                                                                                                                                                             | With             | Needed by                                  | Status                                     | Until agreed                                                                                                 |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------- | ------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| 1   | M4 `ProjectSummary` adds `district`, `cropType`, `expectedReturnPct`, `durationMonths`, `photoUrl`, `anchorId` and `companyId`. M2 maps the M4 fields to its public Listing fields.              | M4               | Sprint 1 (before the listing PR is merged) | Pending                                    | M2 tests use a mocked `projectService`. Do not merge the listing PR until M4's service returns these fields. |
+| 2   | M4 `listOpen()` returns projects with status `open` and `funded`                                                                                                                                 | M4               | Sprint 1                                   | Pending                                    | Same as above.                                                                                               |
+| 3   | M4 alone sets and changes the project status. M2 never writes it (see Listing status)                                                                                                            | M4               | Sprint 1                                   | Pending                                    | Follow the rule in 2.1.                                                                                      |
+| 4   | Release rule D1 (final milestone or tranches) and `projectService.isFinalMilestoneReport(reportId)`                                                                                              | M4               | Before Sprint 2                            | Pending                                    | Do not start `release()`.                                                                                    |
+| 5   | M4 calls `escrowService.release()` only after its approval is committed, and handles `BLOCKED` and `REJECTED`                                                                                    | M4               | Sprint 3                                   | Pending                                    | –                                                                                                            |
+| 6   | `userService.getVerified(userId)`: verified means KYC approved. Until Sprint 3, all users count as verified.                                                                                     | M1               | Sprint 2                                   | Agreed (2026-11-24, reviewer confirmation) | Use the existing verified stub until KYC is implemented.                                                     |
+| 7   | `certificateService.getStatus(companyId)` will be available in Sprint 4 when certificate functionality is implemented.                                                                           | M1               | Sprint 4                                   | Agreed (2026-11-24, reviewer confirmation) | Keep `certificateStatus` as `'none'` until then.                                                             |
+| 8   | Keep both `admin` and `regulator` roles. Admin handles review operations; regulator only views dashboards. M2 admin routes use `admin`.                                                          | M1 / team leader | Sprint 2                                   | Agreed (2026-11-24, reviewer confirmation) | Use `admin` for M2 admin routes.                                                                             |
+| 9   | M5 `AnchorType` contains `INVESTMENT_CREATED`, `ESCROW_STATE_CHANGED`, `OWNERSHIP_TRANSFER`; `INVESTMENT_FUNDED` and `ESCROW_RELEASED` have been removed.                                        | M5               | Before Sprint 2                            | Agreed (PR #42 merged)                     | Use the confirmed event types.                                                                               |
+| 10  | M5 removes duplicates by `(type, refId)`                                                                                                                                                         | M5               | Sprint 2                                   | Pending                                    | –                                                                                                            |
+| 11  | `trustIndexService.get(companyId)` returns a `TrustIndex` object containing `companyId`, `score`, `components`, and `updatedAt`; M2 reads `.score`. Add `getMany(companyIds)` for batch ranking. | M5               | Sprint 2 (`get`), Sprint 3 (`getMany`)     | Pending                                    | `trustIndex` and `riskRank` stay `null` until marketplace integration is ready.                              |
+| 12  | `auditService.mint()`: called after COMMITTED, `escrowRef` is the escrow record id, returns `nftId` and `txHash`                                                                                 | M5               | Sprint 4                                   | Pending                                    | –                                                                                                            |
+| 13  | `scamService.riskCheck()` levels: high blocks, medium proceeds with the level in the reason                                                                                                      | M3               | Sprint 3                                   | Pending                                    | –                                                                                                            |
+| 14  | A shared notification service for emails on state changes                                                                                                                                        | Team leader      | Sprint 2                                   | Pending                                    | Log the event only.                                                                                          |
 
 ---
 
@@ -866,3 +883,4 @@ These items need agreement from other module owners. Until an owner confirms, th
 - 2026-11-23: Listing status now starts from M4's status and can only be raised to `funded`, fixing the Sprint 1 case where `fundedAmount` is `0`. Added Section 9, Open Agreements.
 - 2026-11-23: Added escrow states and transitions, release result `REJECTED` and idempotency, release rule D1, investor routes, error codes, Listing fields `trustIndex`, `riskRank` and `certificateStatus`, definition of `fundedAmount`, append-only log with hash chain, Decimal for money, and extra database models.
 - 2026-11-24: Updated database scope. `Investment`, `EscrowRecord`, `EscrowStateTransition` and `P2PTransfer` are Sprint 1 models. `InvestmentNft` and `InvestmentAnomalyFlag` are deferred to Sprint 4 and will be added with their functionality.
+- 2026-11-24: Updated M4 `ProjectSummary` field names and M2 public field mappings; corrected the M5 `TrustIndex` response structure; clarified M1 verification, certificate status and role agreements; and marked M5 audit event agreement as completed after PR #42 merged.
