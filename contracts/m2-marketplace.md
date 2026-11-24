@@ -70,11 +70,11 @@ export interface Listing {
   expectedReturn: number;
   duration: number;
   photo: string | null;
-  status: "open" | "funded";
+  status: 'open' | 'funded';
   anchorId: string | null;
   trustIndex: number | null; // 0-100 from M5; null until available
   riskRank: number | null; // 1 = lowest risk; null until Trust Index is live
-  certificateStatus: "active" | "revoked" | "none"; // from M1; 'none' until available
+  certificateStatus: 'active' | 'revoked' | 'none'; // from M1; 'none' until available
 }
 ```
 
@@ -95,8 +95,7 @@ The API does not need a separate percentage field.
 M4 owns the project status. M2 starts from M4's status and may only raise it to `'funded'`.
 
 ```ts
-status =
-  m4.status === "funded" || fundedAmount >= fundingGoal ? "funded" : "open";
+status = m4.status === 'funded' || fundedAmount >= fundingGoal ? 'funded' : 'open';
 ```
 
 - M2 never lowers a status that M4 reports as `'funded'`, and never changes M4's project status.
@@ -153,7 +152,7 @@ Until D1 is decided, Sprint 3 work on `release()` must not start.
 export interface EscrowReleaseResult {
   projectId: string;
   reportId: string;
-  status: "RELEASED" | "BLOCKED" | "REJECTED";
+  status: 'RELEASED' | 'BLOCKED' | 'REJECTED';
   // RELEASED = money released; BLOCKED = high risk, state stays LOCKED;
   // REJECTED = nothing to release or transition not allowed
   amount: number; // total released, 0 if not RELEASED
@@ -169,12 +168,7 @@ Sprint 1 stub. No actual money movement is implemented.
 ### 2.3 Escrow states and transitions
 
 ```ts
-export type EscrowState =
-  | "PENDING"
-  | "COMMITTED"
-  | "LOCKED"
-  | "RELEASED"
-  | "CANCELLED";
+export type EscrowState = 'PENDING' | 'COMMITTED' | 'LOCKED' | 'RELEASED' | 'CANCELLED';
 ```
 
 | From      | Allowed next states  | Who can trigger                                             |
