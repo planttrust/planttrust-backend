@@ -21,14 +21,14 @@ interface ProjectSummary {
 
 - **What it does:** projects that are open for investment, newest first.
 - **Called by:** M2 (marketplace), M3 (assistant)
-- **Status:** stub (empty list). Real from Sprint 1, reading the `projects` table.
+- **Status:** real (since Sprint 1), reads the `projects` table.
 - **Returns:** `ProjectSummary[]`
 
 ### `projectService.getById(projectId: string): Promise<ProjectSummary | null>`
 
 - **What it does:** one project, or `null` if it doesn't exist.
 - **Called by:** M2, M3
-- **Status:** stub (returns a demo project for any id). Real from Sprint 1.
+- **Status:** real (since Sprint 1). Returns any status, so check `status === 'open'` before accepting investment.
 - **Returns:** `ProjectSummary | null`
 
 ## HTTP routes (for the frontend)
@@ -104,8 +104,11 @@ What happens:
 1. The company is checked with `userService.getVerified(companyId)`; if `null` → `403 FORBIDDEN`.
 2. The project and its polygon are saved together. The server works out `areaHectares` and the
    centroid from the boundary.
-3. `auditService.anchor('PROJECT_REGISTERED', projectId, { companyId, title, fundingGoal, boundary })`
-   is called and the returned `anchorId` is stored on the project.
+3. After the save, `auditService.anchor('PROJECT_REGISTERED', projectId, data)` is called with the
+   payload agreed in `contracts/m5-audit.md` (hashes only, never the raw boundary or documents):
+   `{ projectId, companyId, polygonHash, areaHectares, fundingGoal, documentHashes, registeredAt }`.
+   The returned `anchorId` is stored on the project. If anchoring fails, the project is still saved
+   and returned with `anchorId: null`.
 
 ```ts
 interface ProjectDetail extends ProjectSummary {
@@ -156,3 +159,6 @@ Enums: `ProjectStatus` (`draft`, `open`, `funded`, `completed`), `ReportStatus` 
 - 2026-11-19: created from the Week 0 scaffold stubs.
 - 2026-11-23: Sprint 1 routes (`POST /projects`, `GET /projects/mine`, `POST /check`), request and
   response shapes, and the M4 tables.
+- 2026-11-23: `projectService` is real. `PROJECT_REGISTERED` payload aligned with `contracts/m5-audit.md`
+  (hashes only). Boundaries are also rejected when edges cross or all points are in a line.
+  Demo projects are seeded for company id `demo-company` (to match M1's demo company).
