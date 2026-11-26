@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import request from 'supertest';
-import { afterAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../../app';
 import { signToken } from '../../shared/auth';
 import { prisma } from '../../shared/prisma';
@@ -52,6 +52,17 @@ const validBody = {
 
 const register = (token: string, body: object = validBody) =>
   request(app).post('/api/geofencing/projects').set('Authorization', `Bearer ${token}`).send(body);
+
+// M1's getVerified() will return null for unknown ids, so treat the test companies as verified.
+// restoreMocks is on, so this spy is reset after every test.
+beforeEach(() => {
+  vi.spyOn(userService, 'getVerified').mockImplementation(async (id) => ({
+    id,
+    role: 'company',
+    name: 'Test company',
+    verified: true,
+  }));
+});
 
 afterAll(async () => {
   await prisma.project.deleteMany({ where: { companyId: { in: [companyA, companyB] } } });
