@@ -1,6 +1,74 @@
 // Module 1 – User Management & Corporate Registry
 // Owner: Nimsara. Only the M1 owner edits this file.
 //
-// Add M1's models here in Sprint 1 (users, investor/company/admin profiles, documents,
-// certificates). Other modules never read these tables directly: they call userService
+// Other modules never read these tables directly: they call userService
 // in src/modules/m1-users/m1.service.ts.
+
+enum UserRole {
+  investor
+  company
+  admin
+  regulator
+}
+
+enum UserStatus {
+  active
+  suspended
+}
+
+enum KycStatus {
+  pending
+  approved
+  rejected
+}
+
+model User {
+  id              String     @id @default(uuid()) // other modules store this id (companyId, investorId, ...)
+  email           String     @unique // always saved lowercase
+  passwordHash    String // bcrypt hash, never the password
+  name            String
+  role            UserRole
+  status          UserStatus @default(active)
+  emailVerifiedAt DateTime? // set by email verification (Sprint 2)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  investor Investor?
+  company  Company?
+  admin    Admin?
+
+  @@map("users")
+}
+
+model Investor {
+  id        String    @id @default(uuid())
+  userId    String    @unique
+  kycStatus KycStatus @default(pending)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("investors")
+}
+
+model Company {
+  id                 String    @id @default(uuid())
+  userId             String    @unique
+  companyName        String
+  registrationNumber String    @unique // one account per registered company
+  contactEmail       String
+  kycStatus          KycStatus @default(pending)
+  createdAt          DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("companies")
+}
+
+model Admin {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admins")
+}
