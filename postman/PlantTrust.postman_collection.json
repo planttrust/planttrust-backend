@@ -47,6 +47,76 @@
           ]
         },
         {
+          "name": "Register investor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"investor\",\n  \"name\": \"Postman Investor\",\n  \"email\": \"{{$randomEmail}}\",\n  \"password\": \"postman-pass-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/users/register",
+            "description": "Creates an investor account with a random email and logs it in (201 + cookie). Click Send again for another new account."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responds 201', () => pm.response.to.have.status(201));",
+                  "pm.test('sets the session cookie', () => pm.expect(pm.cookies.has('plantrust_session')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register company",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"company\",\n  \"name\": \"Postman Company Rep\",\n  \"email\": \"{{$randomEmail}}\",\n  \"password\": \"postman-pass-1\",\n  \"company\": {\n    \"companyName\": \"Postman Estates (Pvt) Ltd\",\n    \"registrationNumber\": \"PV-{{$randomInt}}{{$randomInt}}\",\n    \"contactEmail\": \"{{$randomEmail}}\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/users/register",
+            "description": "Creates a company account with its company details (201 + cookie). The email and registration number are random, so it can be sent again."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responds 201', () => pm.response.to.have.status(201));",
+                  "pm.test('sets the session cookie', () => pm.expect(pm.cookies.has('plantrust_session')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Login",
           "request": {
             "method": "POST",
@@ -58,7 +128,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{demoEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "raw": "{\n  \"email\": \"{{demoEmail}}\",\n  \"password\": \"{{demoPassword}}\",\n  \"role\": \"{{demoRole}}\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -66,7 +136,7 @@
               }
             },
             "url": "{{baseUrl}}/api/users/login",
-            "description": "Logs in with demoEmail / demoPassword from the environment. The backend sets the httpOnly plantrust_session cookie; Postman keeps it and sends it with later requests. Returns 404 until M1 builds it in Sprint 1 (see contracts/m1-users.md)."
+            "description": "Logs in with demoEmail / demoPassword / demoRole from the environment (a seed account: run npm run db:seed first). The backend sets the httpOnly plantrust_session cookie; Postman keeps it and sends it with later requests."
           },
           "event": [
             {
@@ -82,11 +152,45 @@
           ]
         },
         {
+          "name": "Login: wrong workspace",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"company@plantrust.test\",\n  \"password\": \"{{demoPassword}}\",\n  \"role\": \"investor\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/users/login",
+            "description": "The demo company account with the Investor workspace: the password is right but the role is not, so 403 \"This account is not an investor account\"."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responds 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Me",
           "request": {
             "method": "GET",
             "url": "{{baseUrl}}/api/users/me",
-            "description": "The logged-in user { id, role, name }, or 401 when not logged in. Returns 404 until M1 builds it in Sprint 1 (see contracts/m1-users.md)."
+            "description": "The logged-in user { id, role, name }, or 401 when not logged in."
           },
           "event": [
             {
@@ -105,7 +209,7 @@
           "request": {
             "method": "POST",
             "url": "{{baseUrl}}/api/users/logout",
-            "description": "Clears the session cookie. Expects 204. Returns 404 until M1 builds it in Sprint 1 (see contracts/m1-users.md)."
+            "description": "Clears the session cookie. Expects 204."
           },
           "event": [
             {

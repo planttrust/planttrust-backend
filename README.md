@@ -22,10 +22,26 @@ Copy-Item .env.example .env   # your local settings (never committed)
 docker compose up -d          # starts PostgreSQL on localhost:5433
 npm install
 npm run db:migrate            # applies the database migrations
+npm run db:seed               # demo accounts (password Plantrust-demo-2026)
 npm run dev                   # API on http://localhost:4000
 ```
 
 Check it works: open <http://localhost:4000/api/health>.
+
+Demo logins: `investor@plantrust.test`, `company@plantrust.test`, `admin@plantrust.test`,
+`regulator@plantrust.test`. Login also needs the workspace `role` (for example `"role": "company"`).
+
+### Test database (once)
+
+`npm test` uses a separate database, `planttrust_test`, so tests never change your own data. Create its
+tables once, and again whenever new migrations arrive:
+
+```powershell
+$env:DATABASE_URL = "postgresql://planttrust:planttrust@localhost:5433/planttrust_test"; npx prisma migrate deploy
+```
+
+Close that terminal afterwards, so the changed `DATABASE_URL` isn't used by other commands. If it says
+the database doesn't exist, run `docker compose exec db createdb -U planttrust planttrust_test` first.
 
 ## npm scripts
 
