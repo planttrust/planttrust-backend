@@ -21,14 +21,14 @@ interface ProjectSummary {
 
 - **What it does:** projects that are open for investment, newest first.
 - **Called by:** M2 (marketplace), M3 (assistant)
-- **Status:** stub (empty list). Real from Sprint 1, reading the `projects` table.
+- **Status:** real (since Sprint 1), reads the `projects` table.
 - **Returns:** `ProjectSummary[]`
 
 ### `projectService.getById(projectId: string): Promise<ProjectSummary | null>`
 
 - **What it does:** one project, or `null` if it doesn't exist.
 - **Called by:** M2, M3
-- **Status:** stub (returns a demo project for any id). Real from Sprint 1.
+- **Status:** real (since Sprint 1). Returns any status, so check `status === 'open'` before accepting investment.
 - **Returns:** `ProjectSummary | null`
 
 ## HTTP routes (for the frontend)
@@ -145,6 +145,9 @@ What happens:
    });
    ```
 
+5. If anchoring fails, the project is still saved and returned (with `anchorId: null` if the
+   `PROJECT_REGISTERED` anchor failed). The error is logged so it can be retried.
+
 **Document rules** (otherwise `400 VALIDATION_ERROR`): `documentType` is one of the three values,
 `name` and `url` are non-empty, `fileHash` is 64 lowercase hex characters.
 
@@ -207,3 +210,6 @@ are JSON without ids and reports have one `photoUrl`, so a Sprint 3 migration wi
   response shapes, and the M4 tables. Aligned with the M5 contract: `PROJECT_REGISTERED` sends
   hashes (`polygonHash`, `documentHashes`), documents moved to the `project_documents` table with
   an id, `documentType` and `fileHash`, and `DOCUMENT_UPLOADED` is sent per document.
+- 2026-11-24: routes and `projectService` are real. Boundaries are also rejected when edges cross
+  or all points are in a line. Demo projects are seeded for company id `demo-company` (to match
+  M1's demo company).

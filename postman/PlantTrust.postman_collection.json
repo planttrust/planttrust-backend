@@ -294,6 +294,98 @@
               }
             }
           ]
+        },
+        {
+          "name": "Register project",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Hantana tea restoration\",\n  \"description\": \"Replanting a hill-country tea estate.\",\n  \"cropType\": \"Tea\",\n  \"location\": \"Hantana\",\n  \"district\": \"Kandy\",\n  \"boundary\": [\n    {\n      \"lat\": 7.29,\n      \"lng\": 80.63\n    },\n    {\n      \"lat\": 7.29,\n      \"lng\": 80.64\n    },\n    {\n      \"lat\": 7.3,\n      \"lng\": 80.64\n    },\n    {\n      \"lat\": 7.3,\n      \"lng\": 80.63\n    },\n    {\n      \"lat\": 7.29,\n      \"lng\": 80.63\n    }\n  ],\n  \"documents\": [\n    {\n      \"documentType\": \"LAND_DEED\",\n      \"name\": \"Land deed\",\n      \"url\": \"https://example.com/deed.pdf\",\n      \"fileHash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n    }\n  ],\n  \"fundingGoal\": 12000000,\n  \"expectedReturnPct\": 12.5,\n  \"durationMonths\": 36,\n  \"milestones\": [\n    {\n      \"title\": \"Land clearing\",\n      \"targetDate\": \"2027-03-31\"\n    }\n  ],\n  \"risks\": \"Monsoon delays\",\n  \"status\": \"open\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/geofencing/projects",
+            "description": "Company only: log in as the demo company first (M1 Users → Login). Saves the project and its land boundary (a closed ring of { lat, lng }), anchors PROJECT_REGISTERED with M5 and returns 201 with the project. Saves the new id as projectId for \"Check point\". See contracts/m4-geofencing.md."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responds 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('returns the project with its area', () => pm.expect(body.areaHectares).to.be.above(0));",
+                  "pm.collectionVariables.set('projectId', body.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "My projects",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/geofencing/projects/mine",
+            "description": "Company only. The logged-in company's projects with their boundaries, newest first."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responds 200', () => pm.response.to.have.status(200));",
+                  "pm.test('returns a list', () => pm.expect(pm.response.json()).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Check point",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"projectId\": \"{{projectId}}\",\n  \"lat\": 7.295,\n  \"lng\": 80.635\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/geofencing/check",
+            "description": "Any logged-in user. Is the point inside the project land? Send \"Register project\" first so projectId is set. Expects { projectId, inside: true } for the sample point."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('responds 200', () => pm.response.to.have.status(200));",
+                  "pm.test('point is inside', () => pm.expect(pm.response.json().inside).to.equal(true));"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -320,6 +412,12 @@
           ]
         }
       ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "projectId",
+      "value": ""
     }
   ]
 }
