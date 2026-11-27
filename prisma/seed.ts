@@ -1,10 +1,12 @@
 import { prisma } from '../src/shared/prisma';
+import { seedM4 } from '../src/modules/m4-geofencing/m4.seed';
 
 async function main() {
   // Each module adds its seed step here in Sprint 1, in this order
   // (later modules depend on earlier data):
   //   M1 users → M4 projects → M2 investments → M3 scam typologies → M5 genesis anchor
-  console.info('Seed finished (no module seed data yet).');
+  await seedM4(prisma);
+  console.info('Seed finished.');
 }
 
 main()
