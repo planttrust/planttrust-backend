@@ -1,6 +1,112 @@
 // Module 3 – MCP AI & Scam Detection
 // Owner: Imesha. Only the M3 owner edits this file.
 //
-// Add M3's models here in Sprint 1 (scam typologies, scam reports, contract clauses,
-// risk flags, chatbot conversations). Other modules never read these tables directly:
-// they call scamService in src/modules/m3-mcp-ai/m3.service.ts.
+// Other modules never read these tables directly: they call scamService
+// in src/modules/m3-mcp-ai/m3.service.ts. projectId and userId are plain M1 / M4 ids
+// (indexed, no relation), checked through the owner's service.
+
+enum ScamRiskLevel {
+  low
+  medium
+  high
+}
+
+enum ScamReportStatus {
+  open
+  reviewing
+  confirmed
+  dismissed
+}
+
+enum ScamFlagSource {
+  auto
+  user_report
+  admin
+}
+
+enum ScamFlagStatus {
+  raised
+  cleared
+}
+
+/// CBSL scam patterns the assistant checks projects against (seeded).
+model ScamTypology {
+  id          String        @id @default(uuid())
+  code        String        @unique // e.g. "PYRAMID_SCHEME"
+  name        String
+  description String
+  indicators  String[] // warning signs, e.g. "guaranteed returns"
+  severity    ScamRiskLevel
+  source      String // e.g. "CBSL public notice on pyramid schemes"
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  scamReports     ScamReport[]
+  contractClauses ContractClause[]
+
+  @@map("scam_typologies")
+}
+
+/// A user's report that a project looks like a scam (used from Sprint 3).
+model ScamReport {
+  id          String           @id @default(uuid())
+  projectId   String // M4 project: checked with projectService.getById()
+  reporterId  String // M1 user who reported it
+  typologyId  String?
+  description String
+  status      ScamReportStatus @default(open)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  typology ScamTypology? @relation(fields: [typologyId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([reporterId])
+  @@map("scam_reports")
+}
+
+/// A risky clause found in a project's investment terms (used from Sprint 3).
+model ContractClause {
+  id          String        @id @default(uuid())
+  projectId   String // M4 project
+  clauseText  String
+  typologyId  String?
+  riskLevel   ScamRiskLevel
+  explanation String
+  createdAt   DateTime      @default(now())
+
+  typology ScamTypology? @relation(fields: [typologyId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@map("contract_clauses")
+}
+
+/// A medium / high risk flag on a project. Anchored with M5 as SCAM_FLAG (used from Sprint 3).
+model RiskFlag {
+  id        String         @id @default(uuid()) // refId of M5 SCAM_FLAG
+  projectId String // M4 project
+  level     ScamRiskLevel
+  reasons   String[]
+  source    ScamFlagSource
+  status    ScamFlagStatus @default(raised)
+  anchorId  String? // M5 receipt for SCAM_FLAG
+  clearedBy String? // M1 admin who cleared it
+  clearedAt DateTime?
+  createdAt DateTime       @default(now())
+
+  @@index([projectId])
+  @@index([status])
+  @@map("risk_flags")
+}
+
+/// One chatbot conversation of a user, with its messages.
+model ChatbotConversation {
+  id        String   @id @default(uuid())
+  userId    String // M1 user
+  messages  Json     @default("[]") // { role: 'user' | 'assistant', text, toolUsed?, at }[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("chatbot_conversations")
+}
