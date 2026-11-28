@@ -48,6 +48,20 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     });
     return;
   }
+  // express.json() could not read the body: broken JSON (400) or too big (413).
+  const bodyError = err as { type?: string };
+  if (bodyError.type === 'entity.parse.failed') {
+    res.status(400).json({
+      error: { code: 'INVALID_JSON', message: 'The request body is not valid JSON' },
+    });
+    return;
+  }
+  if (bodyError.type === 'entity.too.large') {
+    res.status(413).json({
+      error: { code: 'PAYLOAD_TOO_LARGE', message: 'The request body is too large' },
+    });
+    return;
+  }
   console.error(err);
   res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: 'Something went wrong' } });
 };
